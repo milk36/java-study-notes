@@ -67,7 +67,7 @@ Synchronized锁升级深入详解
         ```
         * Hotspot实现
             ![image](https://i.imgur.com/GBXfmdQ.png)
-            ![image](https://segmentfault.com/img/remote/1460000037646109/view)
+            ![image](https://image-static.segmentfault.com/260/918/2609180466-4799c6800a5379d1)
     1. 锁的升级过程
         * 普通对象 加锁(Synchronized) -> 偏向锁 -> 轻量级锁 -> 重量级锁
         1. (用户空间操作) 偏向锁 升级到轻量锁 LR(Lock record)  -> CAS 自旋
