@@ -70,5 +70,6 @@ Synchronized锁升级深入详解
             ![image](https://image-static.segmentfault.com/260/918/2609180466-4799c6800a5379d1)
     1. 锁的升级过程
         * 普通对象 加锁(Synchronized) -> 偏向锁 -> 轻量级锁 -> 重量级锁
-        1. (用户空间操作) 偏向锁 升级到轻量锁 LR(Lock record)  -> CAS 自旋
+        1. (用户态 用户空间操作) **偏向锁** **升级到轻量锁** LR(Lock record)  -> CAS 自旋
+        1. (内核态 需要向内核申请) **重量锁**
         ![image](https://i.imgur.com/xDwBciC.png)
