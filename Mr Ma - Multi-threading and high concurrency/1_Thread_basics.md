@@ -4,6 +4,8 @@
 1. 代码仓库:
     * [2020版多线程，包括第一版的代码 代码仓库](http://git.mashibing.com/mashibing/juc2020)
     * [JUC](http://git.mashibing.com/bjmashibing/JUC)
+    * [多线程第二版资料 黄老师 马老师](http://git.mashibing.com/kuaile/duoxianchengkaifa-dierban)
+    * [多线程第三版资料](http://git.mashibing.com/kuaile/duocianchengdisanban)
 1. 压榨CPU性能的历史
     * 单进程 人工切换纸带机
     * 多进程批处理 多个任务批量执行

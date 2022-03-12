@@ -70,6 +70,36 @@ Synchronized锁升级深入详解
             ![image](https://image-static.segmentfault.com/260/918/2609180466-4799c6800a5379d1)
     1. 锁的升级过程
         * 普通对象 加锁(Synchronized) -> 偏向锁 -> 轻量级锁 -> 重量级锁
-        1. (用户态 用户空间操作) **偏向锁** **升级到轻量锁** LR(Lock record)  -> CAS 自旋
-        1. (内核态 需要向内核申请) **重量锁**
+            1. (用户态 用户空间操作)  偏向锁 ->  第一访问的线程 把线程id写入markword
+            1. (用户态 用户空间操作) **偏向锁** 升级到 **轻量锁** -> 竞争 将当前线程LR(Lock record 锁记录) 写入markword -> 竞争失败继续CAS 自旋
+            1. (内核态 需要向内核申请) **重量锁**
+        * 锁重入
+            synchronized是可重入锁
+
+            重入次数必须记录, 因为解锁几次必须要对应
+
+            重入信息记录在 偏向锁 LR(Lock record) 记录到线程栈 -> LR + 1
+
+            `markword中的hashCode也存入到线程栈里面`  **轻量级锁也是类似结构**
+
+            重量级锁 -> ? ObjectMonitor 字段上
+        * 自旋锁什么时候升级到重量锁 
+
+            有线程超过10次自旋 -XX:PreBlockSpin 或者自旋线程超过CPU核数的一半
+
+            JDK 1.6以后 加入自适应自旋 Adapative Self Spinnning , JVM 自己控制   
+        * 为什么有自旋锁还需要重量级锁?    
+            
+            自旋是消耗CPU资源的, 如果锁的时间长, 或者自旋线程多, CPU会被大量消耗
+
+            重量级锁有等待队列, 所有拿不到所得进入等待队列, 不需要消耗CPU资源
+
+            `ObjectMonitor.WaitSet` 锁的等待队列
+        * 偏向锁是否一定比自旋锁效率高?
+
+            不一定, 在明确知道会有多线程竞争的情况下, 偏向锁肯定会设计到锁撤销, 这时候直接使用自旋锁效率更高
+
+            JVM启动过程, 会有很多线程竞争(这是必然的), 所以默认情况启动时不打开偏向锁, 过一段时间再打开
+
+            `-XX:BiasedLockingStartupDelay=0` JVM设置偏向锁的延迟时间
         ![image](https://i.imgur.com/xDwBciC.png)
