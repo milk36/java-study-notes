@@ -73,6 +73,15 @@ Synchronized锁升级深入详解
             1. (用户态 用户空间操作)  偏向锁 ->  第一访问的线程 把线程id写入markword
             1. (用户态 用户空间操作) **偏向锁** 升级到 **轻量锁** -> 竞争 将当前线程LR(Lock record 锁记录) 写入markword -> 竞争失败继续CAS 自旋
             1. (内核态 需要向内核申请) **重量锁**
+        * Synchronized 加锁对象后 monitorenter 内部实现
+            ```
+            //判断是否为偏向锁
+            if(UseBiasedLocking){
+                ObjectSynchronizer::fast_enter()//快速 不需要锁竞争
+            }else{
+                ObjectSynchronizer::slow_enter()//慢速 自旋 -> 膨胀升级 -> 重量级锁
+            }
+            ```   
         * 锁重入
             synchronized是可重入锁
 
@@ -99,7 +108,7 @@ Synchronized锁升级深入详解
 
             不一定, 在明确知道会有多线程竞争的情况下, 偏向锁肯定会设计到锁撤销, 这时候直接使用自旋锁效率更高
 
-            JVM启动过程, 会有很多线程竞争(这是必然的), 所以默认情况启动时不打开偏向锁, 过一段时间再打开
+            JVM启动过程, 会有很多线程竞争(这是必然的), 所以默认情况启动时不打开偏向锁(启动延迟4秒), 过一段时间再打开
 
-            `-XX:BiasedLockingStartupDelay=0` JVM设置偏向锁的延迟时间
+            `-XX:BiasedLockingStartupDelay=0` JVM设置偏向锁的启动延迟时间
         ![image](https://i.imgur.com/xDwBciC.png)
