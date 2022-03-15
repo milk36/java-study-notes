@@ -65,14 +65,19 @@
         System.out.println(task.get());
 
         ```
-1. 线程状态
+1. 线程基本方法 sleep yield join
+    * **sleep** 睡眠 让出CPU资源
+    * **yield** 返回就绪状态 谦让退出一会 进入等待队列里 可能很快又回到执行状态
+    * **join** 等待另外一个线程的结束 再运行
+1. 线程6个状态
     * New：新建状态 -> Thread.start()
-    * Runnable：可运行状态 -> ready(挂起) running / thread.yield()
+    * Runnable：可运行状态 -> ready(挂起/就绪) running / thread.yield()
         * yield 屈服 让步
     * Waiting：等待状态 -> Lock.lock 可重入锁 公平锁 等
     * TimedWaiting：超时等待状态 -> Thread.sleep
     * Blocked：阻塞状态 -> synchronized 等待进入同步代码块的锁
     * Terminated：终止状态
+    * 获取当前线程的状态 `t.getState()`
     * 状态图:
     
         ![image](https://i.imgur.com/bmVkDY5.png)
@@ -90,7 +95,7 @@
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                System.out.println("Thread is interrupted
+                System.out.println("Thread is interrupted")
                 //try catch后候中断状态已经被自动复位成false, 以避免出现混乱情况
                 System.out.println(Thread.currentThread().isInterrupted());
             }
@@ -108,13 +113,28 @@
     * interrupted 标志位,不好精确控制,可感知sleep wait操作 相对优雅
     * 使用锁配合其他线程, 才能实现精确控制
 ## 并发编程三大特性: 可见性, 有序性, 原子性
-### 可见性
-1. 线程可见性问题: A线程修改了变量, B线程能否感知变量已被修改
-1. **volatile** 关键字，使一个变量在多个线程间可见
+* **synchronized** 可以保障: 原子性 可见性; **不保障 有序性**
+* **volatile** 可以保障:可见性, 有序性; **不保障 原子性** 
+    * 特性
+        1. 保证线程可见性
+            - MESI 缓存一致性协议
+        1. 禁止指令重排
+            - DCL单例
+            - Double Check Lock 双重检查
+            - 单例模式还要不要加`volatile`? 
+
+                要! `INSTANCE = new InstanceObj()`对象操作在编译器编译后分成三步指令
+
+                1. 给指对象申请内存
+                1. 给成员变量初始化
+                1. 把这块内存的内容赋值给INSTANCE
     * A B线程都用到一个变量，java默认是A线程中保留一份copy，这样如果B线程修改了该变量，则A线程未必知道
     * 使用volatile关键字，会让所有线程都会读到变量的修改值
     * `System.out.println("hello");` 会触发内存同步刷新, 因为`println`内部有用到`synchronized`
     * `volatile`修饰引用类型只能针对引用地址保证其可见性, 引用内部属性不能保证
+### 可见性
+1. 线程可见性问题: A线程修改了变量, B线程能否感知变量已被修改
+
 1. 可见性 与 缓存行
     * CPU L1 L2 L3缓存
     * cache line 缓存行 (64 bytes) 与`volatile`没有关系
@@ -291,5 +311,5 @@
         * 悲观锁 处于等待队列中不消耗CPU资源 
         
             适合场景: 临界区执行时间较长(运算时间长),等待队列长
-    * synchronized 可以保障: 原子性 可见性; 不保障 有序性
+    
     
