@@ -235,6 +235,84 @@ CAS Atomic /新线程同步机制
   new Thread(()->System.out.println( ex.exchange("t1", 250, TimeUnit.MILLISECONDS))).start();
   new Thread(()->System.out.println( ex.exchange(new String()))).start();
   ```
+* LockSupport
+
+  通过调用 `LockSupport.park()` 和 `LockSupport.unpark(thread)` 来实现线程的阻塞和唤醒
+
+  `LockSupport .unpark(thread)`方法可以先于 `LockSupport.park()`方法执行
+
+  AQS AbstractQueuedSynchronizer 就是通过调用 LockSupport 的 park() 和 unpark() 方法来实现线程的阻塞和唤醒
+  
+  ```java
+  public class T13_TestLockSupport {
+    public static void main(String[] args) {
+      //使用lombda表达式创建一个线程t
+      Thread t = new Thread(()->{
+        for (int i = 0; i < 10; i++) {
+          System.out.println(i);
+          if(i == 5) {
+            //调用LockSupport的park()方法阻塞当前线程t 
+            //这里不会被阻塞因为t.start() 后就立即唤醒操作 获得了令牌
+            LockSupport.park();
+          }
+          if(i == 8){
+		        //调用LockSupport的park()方法阻塞当前线程t
+            //这里会一直阻塞下去
+            LockSupport.park();
+          }
+          
+          try {
+            //使当前线程t休眠1秒
+            TimeUnit.SECONDS.sleep(1);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+      });
+      //启动当前线程t
+      t.start();
+      //唤醒线程t  获得令牌
+      LockSupport.unpark(t);
+    }
+  }
+  ```
+  * 对比 `synchronized()、wait()、notify()` 组合使用
+  ```java
+  new Thread(() -> {
+    synchronized (o) {
+      System.out.println("starting ...");
+      SleepHelper.sleepSeconds(1);
+      try {
+        o.wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      System.out.println("end!");
+    }
+  }).start();
+
+  SleepHelper.sleepSeconds(5);
+
+  synchronized (o) {
+      o.notifyAll();
+  }
+  ```
+  * `synchronized()、wait()、notify()` 组合使用的限制:
+    1. 因为`wait()`方法需要释放锁, 所以必须在`synchronized`代码块中使用 否则会抛出异常  `IllegalMonitorStateException`
+    1. `notify()` 方法也必须在`synchronized`代码块中使用, 
+    1. `synchronized()、wait()、notify()` 对象必须一致, 一个 `synchronized` 代码块中只能有一个线程调用 `wait() 或 notify()`
+    1. 当对象的等待队列中有多个线程时，`notify()`只能随机选择一个线程唤醒，无法唤醒指定的线程。
+  * LockSupport 的对应特点:
+    1. LockSupport不需要synchronized加锁 就可以实现线程的阻塞和唤醒
+    1. `unpack(thread)`  可以优先于 `pack()`执行, 并且线程不会阻塞
+    1. 如果一个线程处于等待状态，连续调用了两次`park()`方法，就会使该线程永远无法被唤醒 ??? 两次park却需要消费两个凭证，但我们有且只有一个凭证。
+  * `park() 和 unpark()` 的方法实现由Unsafe类提供
+
+    原理是通过一个变量作为标识, 变量在0 , 1之间来回切换
+
+    当调用`park()`方法时，会将_counter置为0，同时判断前值，等于0说明前面被park过，则直接进入排队，否则将使该线程阻塞。
+
+    当调用`unpark()`方法时，会将_counter置为1，同时判断前值，小于1会进行线程唤醒，否则直接退出。
 ### syncronized 和 ReentrantLock 的不同
 * syncronized : 系统自带 系统自动加锁 自动解锁 默认四种锁状态的升级
 * ReentrantLock : 需要手动加锁 手动解锁 可以出现多个不同的等待队列 CAS实现
