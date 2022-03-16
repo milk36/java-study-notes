@@ -85,13 +85,20 @@ Synchronized锁升级深入详解
     }
     ```   
 * 锁重入
+
     synchronized是可重入
+
     重入次数必须记录, 因为解锁几次必须要对
-    重入信息记录在 偏向锁 LR(Lock record) 记录到线程栈 -> LR + 
-    `markword中的hashCode也存入到线程栈里面`  **轻量级锁也是类似结构*
+
+    重入信息记录在 偏向锁 LR(Lock record) 记录到线程栈 -> LR + 1
+
+    `markword中的hashCode也存入到线程栈里面`  **轻量级锁也是类似结构**
+
     重量级锁 -> ? ObjectMonitor 字段上
 * 自旋锁什么时候升级到重量锁
+
     有线程超过10次自旋 -XX:PreBlockSpin 或者自旋线程超过CPU核数的一
+
     JDK 1.6以后 加入自适应自旋 Adapative Self Spinnning , JVM 自己控制   
 * 为什么有自旋锁还需要重量级锁?    
     

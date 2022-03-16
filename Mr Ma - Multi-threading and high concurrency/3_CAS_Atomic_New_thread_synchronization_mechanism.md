@@ -138,3 +138,103 @@ CAS Atomic /新线程同步机制
     });
   }
   ```
+* Phaser (/ˈfeɪzər/)  阶段
+
+  类似CountDownLatch 和 CyclicBarrier的结合
+
+  1. 继承Phaser 实现 `onAdvance`方法 (推进)
+
+  1. `bulkRegister(n)` 批量注册 ; `register()` 增加1个新注册 
+
+  1. `arriveAndAwaitAdvance` 达到后等待推进到下一个阶段
+
+  1. `arriveAndDeregister` 达到后取消
+  ```java
+  MyPhaser extends Phaser{
+    //phase 当前阶段 registeredParties 以注册的同行者
+    @Override
+    protected boolean onAdvance(int phase, int registeredParties) {
+      switch(phase){
+        case 0:
+          System.out.println(phase+" "+registeredParties);
+          return false;
+        case 1:
+          System.out.println(phase+" "+registeredParties);
+          return false;
+        case 2:
+          System.out.println(phase+" "+registeredParties);
+          System.out.println("end");
+          return true;
+        default:
+          return true;
+      }
+    }
+  }
+
+  MyPhaser phaser = new MyPhaser()
+  phaser.bulkRegister(10);//批量注册
+  for(10){
+    //phaser.register(); //逐个注册
+    new Thread(()->{
+      milliSleep(randomInt(1000));
+      System.out.println("finish phase 0, index:"+i);
+      phaser.arriveAndAwaitAdvance();//达到后等待推进到下一阶段 阶段0
+
+      milliSleep(randomInt(1000));
+      System.out.println("finish phase 1, index:"+i);
+      phaser.arriveAndAwaitAdvance();//达到后等待推进到下一阶段 阶段1
+
+      milliSleep(randomInt(1000));
+      System.out.println("finish phase 2, index:"+i);
+      phaser.arriveAndAwaitAdvance();//达到后等待推进到下一阶段 阶段2
+    }).start();
+  }
+  ```
+* ReadWriteLock 读写锁 
+
+  读写锁的概念其实就是 共享锁 和 排他锁
+
+  读锁 -> 共享 ; 写锁 -> 排他
+
+  适合应用场景 读多 写少
+
+  `new ReentrantReadWriteLock()` 创建读写锁 
+  
+  然后在读写操作分别使用对应的锁操作 上锁/释放锁 操作与 `ReentrantLock` 类似 也需要放在`try{}finally{}`代码块中
+
+  升级版 -> StampedLock 
+  ```java
+  static ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+  static Lock readLock = readWriteLock.readLock();
+  static Lock writeLock = readWriteLock.writeLock();
+  ```
+* Semaphore (/ˈseməfɔːr/ ) 信号  
+
+  设置信号数量 几盏信号灯 内部依赖AQS队列实现
+
+  `acquire()` 获得信号 如果拿不到就一直阻塞
+
+  `release()` 释放锁 
+  ```java
+  //信号灯数量 是否为公平锁
+  Semaphore s = new Semaphore(2, true)
+  try{
+    s.acquire();
+    ...
+  }finally{
+    s.release();
+  }
+  ```
+* Exchanger  交换
+
+  **只能用于两个线程之间的数据交换** 调用方法 `exchanger()` 是阻塞的
+
+  可以设置阻塞时间
+  ```java
+  Exchanger<String> ex = new Exchanger<>();
+  new Thread(()->System.out.println( ex.exchange("t1", 250, TimeUnit.MILLISECONDS))).start();
+  new Thread(()->System.out.println( ex.exchange(new String()))).start();
+  ```
+### syncronized 和 ReentrantLock 的不同
+* syncronized : 系统自带 系统自动加锁 自动解锁 默认四种锁状态的升级
+* ReentrantLock : 需要手动加锁 手动解锁 可以出现多个不同的等待队列 CAS实现
