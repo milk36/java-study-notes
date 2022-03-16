@@ -24,6 +24,7 @@
       }
   ```
 * Wait Notify 解题版本
+
   ```java
   Object lock = new Object();
   new Thread(()->{
