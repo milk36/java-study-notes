@@ -9,20 +9,20 @@
   线程2，实时监控元素个数，当个数到5个时，线程2给出提示并结束
 
   > volatile一定要尽量去修饰普通的值，不要去修饰引用值，因为volatile修饰引用类型，这个引用对象指向的是另外一个new出来的对象对象，如果这个对象里边的成员变量的值改变了，是无法观察到的
-```java
-    static abstract class TestList {
+  ```java
+      static abstract class TestList {
 
-        private List<Integer> list = Lists.newArrayList();
+          private List<Integer> list = Lists.newArrayList();
 
-        void add(int i) {
-            list.add(i);
-        }
+          void add(int i) {
+              list.add(i);
+          }
 
-        int size() {
-            return list.size();
-        }
-    }
-```
+          int size() {
+              return list.size();
+          }
+      }
+  ```
 * Wait Notify 解题版本
   ```java
   Object lock = new Object();
