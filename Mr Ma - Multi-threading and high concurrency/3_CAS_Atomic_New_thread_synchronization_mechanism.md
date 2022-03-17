@@ -216,14 +216,35 @@ CAS Atomic /新线程同步机制
 
   `release()` 释放锁 
   ```java
-  //信号灯数量 是否为公平锁
-  Semaphore s = new Semaphore(2, true)
-  try{
-    s.acquire();
-    ...
-  }finally{
-    s.release();
-  }
+  //同时段内可获取锁的数量 许可证数量 ; 是否为公平锁
+  Semaphore s = new Semaphore(2, true);
+  //Semaphore s = new Semaphore(1)
+  new Thread(()->{
+    try{
+      s.acquire();
+      System.out.println("T1 running...");
+      Thread.sleep(200);
+      System.out.println("T1 running...");
+    }catch(InterruptedException e){
+      e.printStackTrack();
+    }finally{
+      s.release();
+    }
+  }).start();
+
+  new Thread(()->{
+    try{
+      s.acquire();
+      System.out.println("T2 running...");
+      Thread.sleep(200);
+      System.out.println("T2 running...");
+    }catch(InterruptedException e){
+      e.printStackTrack();
+    }finally{
+      s.release();
+    }
+  }).start();
+  
   ```
 * Exchanger  交换
 
