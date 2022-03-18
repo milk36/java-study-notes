@@ -64,7 +64,11 @@ CAS Atomic /新线程同步机制
 * ReentrantLock
 
   可重入锁 与`synchronized `使用方式类似但功能更多 可以替代 `synchronized`
-
+  * Condition 条件 `condition.await()` 和 `condition.signalAll()/single()` 类似 -> `wait 和 notifyAll / notify`
+    ```java
+    Lock lock = new ReentrantLock();
+    Condition condition = lock.newCondition();
+    ```
   * 注意:加锁 释放锁 操作需要在 `try{}finally{}` 代码快中执行
     ```java
     Lock lock = new ReentrantLock();
@@ -146,9 +150,9 @@ CAS Atomic /新线程同步机制
 
   1. `bulkRegister(n)` 批量注册 ; `register()` 增加1个新注册 
 
-  1. `arriveAndAwaitAdvance` 达到后等待推进到下一个阶段
+  1. `arriveAndAwaitAdvance` 到达后等待推进到下一个阶段
 
-  1. `arriveAndDeregister` 达到后取消
+  1. `arriveAndDeregister` 到达后取消
   ```java
   MyPhaser extends Phaser{
     //phase 当前阶段 registeredParties 以注册的同行者
@@ -178,15 +182,15 @@ CAS Atomic /新线程同步机制
     new Thread(()->{
       milliSleep(randomInt(1000));
       System.out.println("finish phase 0, index:"+i);
-      phaser.arriveAndAwaitAdvance();//达到后等待推进到下一阶段 阶段0
+      phaser.arriveAndAwaitAdvance();//到达后等待推进到下一阶段 阶段0
 
       milliSleep(randomInt(1000));
       System.out.println("finish phase 1, index:"+i);
-      phaser.arriveAndAwaitAdvance();//达到后等待推进到下一阶段 阶段1
+      phaser.arriveAndAwaitAdvance();//到达后等待推进到下一阶段 阶段1
 
       milliSleep(randomInt(1000));
       System.out.println("finish phase 2, index:"+i);
-      phaser.arriveAndAwaitAdvance();//达到后等待推进到下一阶段 阶段2
+      phaser.arriveAndAwaitAdvance();//到达后等待推进到下一阶段 阶段2
     }).start();
   }
   ```
