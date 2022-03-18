@@ -280,4 +280,16 @@
     return t;
   }
   ```
+### 面试题 3
 
+两个线程顺序打印输出结果为:A1B2C3...Z26
+* 生成26个字母
+  ```java
+  private static final int CHAR_A = 65;
+  private static final int STR_26 = 26;
+  private static final int MAX = CHAR_A + STR_26;
+
+  for (int i = CHAR_A; i < MAX; i++) {
+    System.out.println((char)i);
+  }
+  ```
