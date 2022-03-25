@@ -1,0 +1,10 @@
+@@startuml
+abstract AbstractQueuedSynchronizer
+note right: AQS
+abstract Sync 
+class NonfairSync{
+  # boolean tryAcquire(int acquires)
+}
+AbstractQueuedSynchronizer <|-- Sync
+Sync <|-- NonfairSync
+@@enduml

@@ -329,7 +329,7 @@ CAS Atomic /新线程同步机制
     1. 当对象的等待队列中有多个线程时，`notify()`只能随机选择一个线程唤醒，无法唤醒指定的线程。
   * LockSupport 的对应特点:
     1. LockSupport不需要synchronized加锁 就可以实现线程的阻塞和唤醒
-    1. `unpack(thread)`  可以优先于 `pack()`执行, 并且线程不会阻塞
+    1. `unpack(thread)`  <mark>可以优先于</mark> `pack()`执行, 并且线程不会阻塞
     1. 如果一个线程处于等待状态，连续调用了两次`park()`方法，就会使该线程永远无法被唤醒 ??? 两次park却需要消费两个凭证，但我们有且只有一个凭证。
   * `park() 和 unpark()` 的方法实现由Unsafe类提供
 

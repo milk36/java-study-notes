@@ -287,9 +287,113 @@
   ```java
   private static final int CHAR_A = 65;
   private static final int STR_26 = 26;
-  private static final int MAX = CHAR_A + STR_26;
-
-  for (int i = CHAR_A; i < MAX; i++) {
-    System.out.println((char)i);
-  }
+  private static final int MAX = CHAR_A + STR_26;  
   ```
+  * synchronized wait / notify 解题方式
+    ```java
+    private static void waitNotifySolve() {
+      System.out.println("waitNotifySolve");
+      Object lock = new Object();
+      Thread t1 = new Thread(() -> {
+        synchronized (lock) {
+          for (int i = 0; i < STR_26; i++) {
+            System.out.print((char) (CHAR_A + i));
+            //唤醒等待线程输出
+            lock.notify();
+            try {
+              //让出锁资源 进入等待
+              lock.wait();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+          }
+          lock.notifyAll();
+        }
+      }, "t1");
+
+      Thread t2 = new Thread(() -> {
+        synchronized (lock) {
+          //确保T2先于T1执行 防止T1抢先获取锁资源执行后 T2一直等待下去
+          t1.start();
+          for (int i = 1; i <= STR_26; i++) {
+            try {
+              //进入等待
+              lock.wait();
+              System.out.print(i);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+            //唤醒等待线程
+            lock.notify();
+          }
+          lock.notifyAll();
+        }
+      }, "t2");
+
+      t2.start();
+      //t1.start();
+      try {
+        t1.join();
+        t2.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+    ```
+  * ReentrantLock Condition 解题
+    ```java
+    private static void reentrantLockSolve() {
+      System.out.println("reentrantLockSolve");
+      Lock lock = new ReentrantLock();
+      Condition condition = lock.newCondition();
+      Thread t1 = new Thread(() -> {
+        lock.lock();
+        try {
+          for (int i = CHAR_A; i < MAX; i++) {
+            System.out.print((char) i);
+            //通知唤醒数字输出线程 T2
+            condition.signal();
+            //当前线程进入等待
+            condition.await();
+          }
+          condition.signal();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        } finally {
+          lock.unlock();
+        }
+      });
+
+      Thread t2 = new Thread(() -> {
+        lock.lock();
+        // System.out.println("T2"); 调试T1线程卡住的情况
+        try {
+          //保证T1线程运行在T2线程启动之后,防止 T1调用signle T2还没执行
+          t1.start();
+          for (int i = 1; i <= STR_26; i++) {
+            //当前线程等待
+            condition.await();
+            System.out.print(i);
+            //通知唤醒字符输出线程 T1
+            condition.signal();
+          }
+          condition.signal();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        } finally {
+          lock.unlock();
+        }
+      });
+
+      t2.start();
+      // t1.start();
+
+      try {
+        t1.join();
+        t2.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+    ```  
+

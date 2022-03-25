@@ -1,0 +1,48 @@
+@startuml
+
+label "Sync Queue" as sq
+label "head" as hd
+label "tail" as tl
+queue AQS_CHL{
+  node node1 [
+    waitStatus
+    prev
+    next
+    thread
+    nextWaiter
+  ]
+  node node2 [
+    waitStatus
+    prev
+    next
+    thread
+    nextWaiter
+  ]
+  node node3 [
+    waitStatus
+    prev
+    next
+    thread
+    nextWaiter
+  ]
+  node node4[
+    waitStatus
+    prev
+    next
+    thread
+    nextWaiter
+  ]
+}
+sq -> AQS_CHL 
+hd -down-> node4
+tl -down-> node1
+
+node1 -> node2
+node2 -> node1
+node2 -> node3
+node3 -> node2
+node3 -> node4
+node4 -> node3
+
+
+@enduml

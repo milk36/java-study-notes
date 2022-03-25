@@ -1,0 +1,26 @@
+@@startuml
+|R|ReentrantLock
+|#DimGray|NS|Sync -> NonfairSync
+|#AntiqueWhite|A|AQS
+|R|
+:lock();
+|NS|
+:acquire(1);
+|A|
+:acquire(1);
+if(tryAcquire?)
+|NS|
+:nonfairTryAcquire();
+kill
+else
+|A|
+:addWaiter();
+->Tail Node;
+  if(acquireQueued()?) then
+    :selfInterrupt(); 
+  else   
+    :run;
+  endif
+kill
+endif
+@@enduml
