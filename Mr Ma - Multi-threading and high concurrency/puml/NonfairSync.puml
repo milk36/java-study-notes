@@ -1,10 +1,49 @@
 @@startuml
-abstract AbstractQueuedSynchronizer
-note right: AQS
+abstract AbstractQueuedSynchronizer{
+  - volatile int state
+  - transient volatile Node head
+  - transient volatile Node tail
+  - transient Thread exclusiveOwnerThread
+}
+note top of AbstractQueuedSynchronizer : AQS
 abstract Sync 
 class NonfairSync{
   # boolean tryAcquire(int acquires)
 }
+class Node{
+  # volatile int waitStatus
+  # volatile Node prev
+  # volatile Node next
+  # volatile Thread thread
+}
 AbstractQueuedSynchronizer <|-- Sync
 Sync <|-- NonfairSync
+
+note left of AbstractQueuedSynchronizer::state 
+  同步状态
+end note
+note left of AbstractQueuedSynchronizer::head 
+  队列头
+end note
+note left of AbstractQueuedSynchronizer::tail 
+  队列尾
+end note
+note left of AbstractQueuedSynchronizer::exclusiveOwnerThread 
+  当前独占线程
+end note
+note right of Node::waitStatus
+  等待状态
+end note
+note right of Node::prev
+  前节点
+end note
+note right of Node::next
+  后节点
+end note
+note right of Node::thread
+  对应线程
+end note
+
+AbstractQueuedSynchronizer "n" *- Node
+
 @@enduml

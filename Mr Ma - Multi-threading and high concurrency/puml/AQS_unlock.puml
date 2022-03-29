@@ -1,0 +1,25 @@
+@@startuml
+|R|ReentrantLock
+|#LightSteelBlue|SC|Sync 
+|#AntiqueWhite|A|AQS
+|R|
+:unlock();
+|SC|
+:release(1);
+|A|
+:release(1);
+:tryRelease(1);
+|SC|
+if(tryRelease(1)?) then
+  |SC|
+  if(h != null && h.waitStatus != 0) then  (队列中还有后续等待节点)
+  :unparkSuccessor(head_node);
+  note : 唤醒后续节点  
+  endif 
+  :true;
+  kill 
+else   
+  :false;
+  kill
+endif
+@@enduml

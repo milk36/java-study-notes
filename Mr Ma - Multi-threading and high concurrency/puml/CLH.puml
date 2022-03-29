@@ -9,28 +9,24 @@ queue AQS_CHL{
     prev
     next
     thread
-    nextWaiter
   ]
   node node2 [
     waitStatus
     prev
     next
     thread
-    nextWaiter
   ]
   node node3 [
     waitStatus
     prev
     next
     thread
-    nextWaiter
   ]
   node node4[
     waitStatus
     prev
     next
     thread
-    nextWaiter
   ]
 }
 sq -> AQS_CHL 
