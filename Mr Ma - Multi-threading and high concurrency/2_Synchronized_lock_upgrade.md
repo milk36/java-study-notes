@@ -76,6 +76,8 @@ Synchronized锁升级深入详解
     1. (用户态 用户空间操作) **偏向锁** 升级到 **轻量锁** -> 竞争 将当前线程LR(Lock record 锁记录) 写入markword -> 竞争失败继续CAS 自旋
     1. (内核态 需要向内核申请) **重量锁**
 * Synchronized 加锁对象后 monitorenter 内部实现
+
+    `monitorenter` 输入对象的监视器 [虚拟机规范](https://docs.oracle.com/javase/specs/jvms/se6/html/Instructions2.doc9.html)
     ```
     //判断是否为偏向锁
     if(UseBiasedLocking){

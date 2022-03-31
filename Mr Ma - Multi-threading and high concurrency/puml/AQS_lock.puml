@@ -1,6 +1,6 @@
 @@startuml
 |R|ReentrantLock
-|#DimGray|NS|Sync -> NonfairSync
+|#DimGray|NS|Sync # NonfairSync
 |#AntiqueWhite|A|AQS
 |R|
 :lock();

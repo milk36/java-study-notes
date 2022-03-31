@@ -1,5 +1,7 @@
 @startuml
 
+card "volatile state" as vs
+
 label "Sync Queue" as sq
 label "head" as hd
 label "tail" as tl
@@ -40,5 +42,6 @@ node3 -> node2
 node3 -> node4
 node4 -> node3
 
+vs ... AQS_CHL
 
 @enduml

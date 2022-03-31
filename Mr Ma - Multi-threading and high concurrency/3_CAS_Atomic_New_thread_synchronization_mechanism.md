@@ -69,11 +69,16 @@ CAS Atomic /新线程同步机制
     Lock lock = new ReentrantLock();
     Condition condition = lock.newCondition();
     ```
-  * 注意:加锁 释放锁 操作需要在 `try{}finally{}` 代码快中执行
+  * 注意:加锁 释放锁 操作需要在 `try{}finally{}` 代码快中执行 
+    
+    锁【lock.lock】必须紧跟try代码块，且unlock要放到finally第一行 (阿里代码规范)
+
+    <big>确保出现异常的情况下 也能正常的释放锁</big>
     ```java
     Lock lock = new ReentrantLock();
+    lock.lock();
     try{
-        lock.lock();
+      count++;
     }catch(InterruptedExcption e){
         e.printStackTrace();
     }finally{
@@ -82,22 +87,29 @@ CAS Atomic /新线程同步机制
     ```
   * tryLock() 进行尝试加锁
     ```java
-    try{
-      boolean locked = lock.tryLock(5,TimeUnit.SECONDS);//尝试加锁,等待5秒,返回是否加锁成功
-      System.out.println(locked);
-    }finally{
-      lock.unlock();
+    boolean locked = lock.tryLock(5,TimeUnit.SECONDS);//尝试加锁,等待5秒,返回是否加锁成功
+    if(locked){
+      try{
+        System.out.println(locked);
+      }finally{
+        lock.unlock();
+      }
     }
     ```
   * lockInterruptibly()  可以被打断的加锁 这是比sync要灵活的地方
     ```java
     Thread t2 = new Thread(()->{
+      lock.lockInterruptibly();//对interrupt()方法做出响应
       try{
-        lock.lockInterruptibly();//对interrupt()方法做出响应
+        TimeUnit.SECONDS.sleep(5);
+        System.out.println("t2")
+      } catch (InterruptedException e) {
+        System.out.println("interrupted!");
       }finally{
         lock.unlock();
       }
     }
+    TimeUnit.SECONDS.sleep(1);
     t2.interrupt();//中断线程操作
     ```
   * 公平锁 非公平锁设置
