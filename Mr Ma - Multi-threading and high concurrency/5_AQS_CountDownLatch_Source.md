@@ -1,6 +1,7 @@
 AQS (AbstractQueuedSynchronizer) CountDownLatch 源码解读
 ===
 ### CountDownLatch await 等待获取锁
+![await](https://i.imgur.com/bbIiU4r.png "await")
 * `CountDownLatch.await`
   ```java
   public void await() throws InterruptedException {
@@ -30,6 +31,8 @@ AQS (AbstractQueuedSynchronizer) CountDownLatch 源码解读
   以共享可中断模式获取
   
   失败则进入等待状态
+
+  这里与`ReentrantLock`不同的是 head 在被唤醒后 会向后传递 将后面的 netx 继续唤醒
   ```java
   private void doAcquireSharedInterruptibly(int arg)
     throws InterruptedException {
@@ -58,11 +61,11 @@ AQS (AbstractQueuedSynchronizer) CountDownLatch 源码解读
   ```
 * `AQS.setHeadAndPropagate`  
 
-  设置队列的头，并检查后续队列是否有在共享模式下等待的 Node 
+  成功唤醒共享锁后 设置队列的头，并检查后续队列是否有在共享模式下等待的 Node 
   ```java
   private void setHeadAndPropagate(Node node, int propagate) {
       Node h = head; // 记录旧 head 用于下面检查
-      setHead(node);
+      setHead(node);//将当前Node 设置为Head
       
       if (propagate > 0 || h == null || h.waitStatus < 0 ||
           (h = head) == null || h.waitStatus < 0) {
@@ -74,17 +77,17 @@ AQS (AbstractQueuedSynchronizer) CountDownLatch 源码解读
   ```
 * `AQS.doReleaseShared`  
 
-  唤醒共享锁 并处理后续等待节点唤醒
+  成功唤醒共享锁后 处理后续等待节点唤醒
   ```java
   private void doReleaseShared() {      
       for (;;) {
           Node h = head;
-          if (h != null && h != tail) {
+          if (h != null && h != tail) {//判断是否有后续节点需要唤醒
               int ws = h.waitStatus;
               if (ws == Node.SIGNAL) {
                   if (!h.compareAndSetWaitStatus(Node.SIGNAL, 0))//CAS 将head.waitStatus = 0
                       continue;            
-                  unparkSuccessor(h);//唤醒 next节点
+                  unparkSuccessor(h);//唤醒 head.next节点
               }
               else if (ws == 0 &&
                        !h.compareAndSetWaitStatus(0, Node.PROPAGATE))//PROPAGATE == -3 以便能传导后续节点唤醒操作
@@ -96,6 +99,7 @@ AQS (AbstractQueuedSynchronizer) CountDownLatch 源码解读
   }
   ```
 ### CountDownLatch countDown 减少门闩计数释放锁  
+![countDown](https://i.imgur.com/nph9YA6.png "countDown")
 * `CountDownLatch.countDown`
   ```java
   public void countDown() {
@@ -120,12 +124,13 @@ AQS (AbstractQueuedSynchronizer) CountDownLatch 源码解读
   ```java
   protected boolean tryReleaseShared(int releases) {
       // Decrement count; signal when transition to zero
+      //因为释放锁可能同时被多个线程调用 需要循环CAS操作 直到成功
       for (;;) {
           int c = getState();
           if (c == 0)
               return false;
           int nextc = c - 1;
-          if (compareAndSetState(c, nextc))//CAS 设置 state - 1
+          if (compareAndSetState(c, nextc))//CAS 设置 state - 1 
               return nextc == 0;
       }
   }

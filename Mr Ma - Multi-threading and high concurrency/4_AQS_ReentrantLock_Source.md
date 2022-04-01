@@ -17,7 +17,11 @@ AQS (AbstractQueuedSynchronizer) ReentrantLock 源码解读
       CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系)。
       
       AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁的分配。  
-  1. LockSupport `park unpark  ` 暂停/唤醒 相应线程
+  1. LockSupport `park unpark  ` 暂停/唤醒 相应线程 
+    
+      `AQS.parkAndCheckInterrupt -> LockSupport.park(this)`
+
+      `AQS.unparkSuccessor -> LockSupport.unpark(node.next.thread)`
   1. VarHandle(变量句柄) 替换 `unsafe.objectFieldOffset`(JDK 1.8) 偏移操作 实现对相应字段的CAS操作
 
       原理类似反射操作
@@ -225,8 +229,10 @@ AQS (AbstractQueuedSynchronizer) ReentrantLock 源码解读
 #### ReentrantLock **release** 释放锁资源
 * `AQS.release` 流程
 
-  ![Release Lock](https://i.imgur.com/7kinOPs.png "Release Lock")
+  ![Release Lock](https://i.imgur.com/wmBmJLI.png "Release Lock")
 * `ReentrantLock.unlock`
+
+  释放锁后 唤醒下一个在等待状态中的 Node
   ```java
   public void unlock() {
         sync.release(1);

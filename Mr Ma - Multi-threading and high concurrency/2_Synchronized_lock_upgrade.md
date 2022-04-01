@@ -67,6 +67,20 @@ Synchronized锁升级深入详解
     Instance size: 24 bytes //总共24字节
     Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
     ```
+    * 查看jvm默认启动参数 `java -XX:+PrintCommandLineFlags -version`
+
+        -XX:+UseCompressedClassPointers 开启类型指针压缩 klass
+
+        -XX:+UseCompressedOops 开启普通对象指针压缩 (Oops -> ordinary object pointer) 
+        
+        -XX:-UseCompressedOops 关闭普通对象指针压缩 上面的 `java.lang.String TestInfo.name` 没有压缩 将占用 8 字节
+        ```
+        java -XX:+PrintCommandLineFlags -version
+        -XX:InitialHeapSize=257905728 -XX:MaxHeapSize=4126491648 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC
+        java version "1.8.0_321"
+        Java(TM) SE Runtime Environment (build 1.8.0_321-b07)
+        Java HotSpot(TM) 64-Bit Server VM (build 25.321-b07, mixed mode)
+        ```
     * Hotspot实现
         ![image](https://i.imgur.com/GBXfmdQ.png)
         ![image](https://image-static.segmentfault.com/260/918/2609180466-4799c6800a5379d1)
