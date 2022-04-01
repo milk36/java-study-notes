@@ -1,0 +1,20 @@
+@startuml
+|C|CountDownLatch
+|#LightSteelBlue|SC|CountDownLatch # Sync 
+|#AntiqueWhite|A|AQS
+|C|
+:await();
+|A|
+:acquireSharedInterruptibly(1);
+|SC|
+:tryAcquireShared(1);
+|A|
+if(tryAcquireShared(1) < 0) then
+|A|
+:doAcquireSharedInterruptibly(1);
+kill
+else
+:run;
+kill
+endif
+@enduml

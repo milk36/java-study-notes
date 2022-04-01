@@ -1,0 +1,25 @@
+@startuml
+|C|CountDownLatch
+|#LightSteelBlue|SC|CountDownLatch # Sync 
+|#AntiqueWhite|A|AQS
+|C|
+:countDown();
+|A|
+:releaseShared(1);
+|SC|
+:tryReleaseShared(1);
+note 
+  计数器减一 
+  并判断能否释放锁
+end note  
+|A|
+if(tryReleaseShared(1)) then
+:doReleaseShared();
+note : 释放锁
+:true;
+kill
+else
+:false;
+kill
+endif
+@enduml
