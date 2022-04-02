@@ -77,7 +77,8 @@ AQS (AbstractQueuedSynchronizer) ReentrantLock 源码解读
   public final void acquire(int arg) {
       if (!tryAcquire(arg) && //尝试获取锁
           acquireQueued(addWaiter(Node.EXCLUSIVE), arg)) //添加到等待队列尾 在队列中等待 并尝试获取锁
-          selfInterrupt();
+          selfInterrupt();//如果在等待状态的线程被执行中断 这里会将唤醒的线程状态重新设置成 中断 
+                          //因为 acquireQueued() -> parkAndCheckInterrupt() -> Thread.interrupted() 会清除中断状态
   }
   ```
 * Node nextWaiter 标识 独占 / 共享  

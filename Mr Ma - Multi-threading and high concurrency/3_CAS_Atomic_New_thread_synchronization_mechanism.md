@@ -98,19 +98,30 @@ CAS Atomic /新线程同步机制
     ```
   * lockInterruptibly()  可以被打断的加锁 这是比sync要灵活的地方
     ```java
+    ReentrantLock lock = new ReentrantLock();
     Thread t2 = new Thread(()->{
-      lock.lockInterruptibly();//对interrupt()方法做出响应
-      try{
-        TimeUnit.SECONDS.sleep(5);
-        System.out.println("t2")
-      } catch (InterruptedException e) {
-        System.out.println("interrupted!");
-      }finally{
+        try {
+            lock.lockInterruptibly();//t2等待锁 中间可以被打断
+            System.out.println("t1");
+        } catch (InterruptedException e) {
+            System.out.println("t2 lock interrupted");
+            e.printStackTrace();//抛出 InterruptedException
+        }finally {
+            lock.unlock();//抛出 IllegalMonitorStateException 因为还没有持有锁资源
+        }
+    });
+    
+    lock.lock();//主线程先持有锁
+    try {
+        t2.start();
+        Thread.sleep(100);
+        t2.interrupt();//打断正在等待状态的t2线程
+        System.out.println("main interrupt t2");
+    }catch (InterruptedException e){
+        e.printStackTrace();
+    }finally {
         lock.unlock();
-      }
     }
-    TimeUnit.SECONDS.sleep(1);
-    t2.interrupt();//中断线程操作
     ```
   * 公平锁 非公平锁设置
 
