@@ -1,0 +1,41 @@
+@startuml
+skinparam linetype ortho
+' skinparam linetype polyline
+' database "ThreadLocalMap"{
+'   folder "Entry[]"{
+'     rectangle "ThreadLocal<?> key :: Object value" as r1
+'     rectangle "ThreadLocal<?> key :: Object value" as r2
+'     rectangle "ThreadLocal<?> key :: Object value" as r3
+'     rectangle ". . ." as other
+'   }  
+' }
+' r1 .down. r2
+' r2 .down. r3
+' r3 .down. other
+node Stack{
+  class "Thread " as t1{
+    # ThreadLocalMap threadLocals
+  }
+
+  class "Thread " as t2{
+    # ThreadLocalMap threadLocals
+  }
+}
+node Heap{
+  map "ThreadLocalMap Entry[] " as t1Map{
+    ThreadLocal<?> key1 => Object value  
+    ThreadLocal<?> key2 => Object value
+    ThreadLocal<?> key3 => Object value
+  }
+  map "ThreadLocalMap Entry[] " as t2Map{
+    ThreadLocal<?> key1 => Object value
+    null => Object value  
+  }
+}
+' Stack -[hidden]> Heap
+t1 -[hidden]-> t2
+t1Map -[hidden]-> t2Map
+t1::threadLocals .> t1Map
+t2::threadLocals .> t2Map
+
+@enduml

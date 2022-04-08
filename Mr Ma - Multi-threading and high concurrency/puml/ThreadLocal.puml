@@ -1,0 +1,47 @@
+@startuml
+class Thread{
+  # ThreadLocalMap threadLocals
+}
+note left of Thread::threadLocals
+每个线程独立的 Map
+end note
+class ThreadLocal{
+  - int threadLocalHashCode
+  # T initialValue()
+  # void createMap()
+  + T get()
+  + void set(T)
+  + void remove()
+}
+note right of ThreadLocal::threadLocalHashCode
+用于在Map桶中分配hash映射
+end note
+note right of ThreadLocal::initialValue
+初始数据 用于get函数调用
+end note
+note right of ThreadLocal::createMap
+为当前线程创建ThreadLocalMap
+end note
+note right of ThreadLocal::remove
+移除当前线程局部变量 以防内存溢出
+end note
+class ThreadLocalMap{
+  - Entry[] table
+  - int size
+  - int threshold
+}
+note left of ThreadLocalMap::table
+存放局部变量的桶 bucket 但每个桶里只有一个Entry 
+非链表结构
+end note
+note left of ThreadLocalMap::threshold
+容量膨胀阀值
+end note
+class Entry{
+  - ThreadLocal<?> key
+  # Object value
+}
+Thread .. ThreadLocalMap
+ThreadLocalMap o-- Entry
+@enduml
+
