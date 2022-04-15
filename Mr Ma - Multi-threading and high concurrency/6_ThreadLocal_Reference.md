@@ -398,9 +398,9 @@ buffer 2:t2
 
   * ReferenceQueue使用方式
     ```java
-    class MSoftReference extends SoftReference<MyObject>{
+    class MSoftReference extends SoftReference<M>{
         String gc_logic_name;
-        public MSoftReference(MyObject referent, ReferenceQueue q) {
+        public MSoftReference(M referent, ReferenceQueue q) {
             super(referent, q);
             gc_logic_name = referent.name;
         }
