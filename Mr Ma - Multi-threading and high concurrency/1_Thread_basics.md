@@ -186,6 +186,36 @@
         单线程的重排序，必须保证最终一致性
         as-if-serial：看上去像是序列化（单线程）
         ```
+        乱序测试代码
+        ```java
+        for(i<Integer.MAX;i++){
+            a = b = y = z = 0;
+            CountDownLatch latch = new CountDownLatch(2);
+            Thread t1 = new Thread(() -> {
+                //下面两行代码可能会打乱执行顺序
+                a = 1;
+                y = b;
+                latch.countDown();
+            });
+            Thread t2 = new Thread(() -> {
+                //下面两行代码可能会打乱执行顺序
+                b = 1;
+                z = a;
+                latch.countDown();
+            });
+            t1.start();
+            t2.start();
+            try {
+                latch.await();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            if (y == 0 && z == 0) {
+                System.err.println("第" + i + "次结果：" + y + "," + z);
+                break;
+            }
+        }
+        ```
     1. **半初始化状态**;对象创建过程中可能出现的重排序; 中间状态逸出; 
         * 对象半初始化状态
             ```

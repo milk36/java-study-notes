@@ -161,6 +161,8 @@ buffer 2:t2
 
   普通的引用也就是默认的引用，默认的引用就是说，只要有一个应用指向这个对象，那么垃圾回收器一定不会回收它
 
+  当内存空间不足时，JAVA虚拟机宁可抛出OutOfMemoryError终止应用程序也不会回收具有强引用的对象。
+
   `finalize()`这个方法永远都不需要重写，而且也不应该被重写
   ```java
   public class M {
@@ -177,6 +179,39 @@ buffer 2:t2
   System.out.println(m);  
   ```
   执行GC后 `finalize()` 方法执行打印输出
+* Reference 子类 `软 弱 虚` 引用速览
+
+  |引用类型|被GC条件|用途|生存时间|
+  |:-:|:-:|:-:|:-:|
+  |强引用|不会|普通对象状态|JVM停止运行时|
+  |软引用|内存不足|对象缓存|内存不足时|
+  |弱引用|GC时|对象缓存|GC时|
+  |虚引用|GC时|动态内存/堆外内存操作|GC时|
+
+  ```java
+  M softObj = new M("Soft-M");
+  ReferenceQueue softQueue = new ReferenceQueue();
+  SoftReference softReference = new SoftReference(softObj, softQueue);
+
+  M weakObj = new M("Weak-M");
+  ReferenceQueue weakQueue = new ReferenceQueue();
+  WeakReference weakReference = new WeakReference(weakObj, weakQueue);
+
+  M phantomObj = new M("Phantom-M");
+  ReferenceQueue phantomQueue = new ReferenceQueue();
+  PhantomReference pReference = new PhantomReference(phantomObj, phantomQueue);
+
+  System.out.println("softReference:"+softReference.get());
+  System.out.println("weakReference:"+weakReference.get());
+  System.out.println("phantomReference:"+pReference.get());//phantom 只有虚引用一开始就无法 get 出引用对象
+
+  softObj=null;weakObj=null;phantomObj=null;
+  System.gc();
+  System.out.println("GC after...");
+  System.out.println("softReference:"+softReference.get());
+  System.out.println("weakReference:"+weakReference.get());//gc后 weak引用也被回收
+  System.out.println("phantomReference:"+pReference.get());
+  ```  
 * 软 引用 
 
   SoftReference  <big>当内存不够时 软引用才被回收掉</big>
@@ -206,6 +241,8 @@ buffer 2:t2
 
   `WeakReference` <big>只要遇到 GC 就会被回收</big>
 
+  无论当前内存是否紧缺，GC都将回收被弱引用关联的对象。
+
   使用场景: 如果一个强引用指向了一个弱引用 只要强引用消失 这个弱引用就会被GC回收
   ```java
   WeakReference<M> wr = new WeakReference<>(new M());
@@ -215,6 +252,9 @@ buffer 2:t2
   SleepHelper.sleepSeconds(1);
   System.out.println(wr.get());//被回收 打印 null 
   ```  
+  * ThreadLocal 用途
+
+    应用场景: Spring 中的 Transaction connection 事务连接, 保持同一个 connection
   * ThreadLocal 可能会出现内存泄漏的情况
 
     ![](https://blog.xiaohansong.com/media/15473672636979/15473735704801.jpg "ThreadLocal 内存关系")    
@@ -270,19 +310,25 @@ buffer 2:t2
 
     `PhantomReference` 触发GC 后虚引用将被放入 事先定义好的`ReferenceQueue`队列中 这意味着该实例仍在内存中
 
-    无法获得虚引用引用. 引用对象永远无法通过 API 直接访问 get不到值
+    对象设置一个虚引用的唯一目的是：能在此对象被垃圾收集器回收的时候收到一个系统通知
 
-    GC后只能得到一个通知 队列就是获取这个通知的方式
+    无法获得虚引用引用. 引用对象永远无法通过 API 直接访问 get不到值
+    ```java
+    public T get() {
+        return null;//覆盖了Reference.get()并且总是返回null
+    }
+    ```
+
+    GC后只能得到一个通知 `ReferenceQueue` 引用队列就是获取这个通知的方式
 
     适用场景: 
-    1. 动态内存
+    1. 动态内存 直接内存 `ByteBuffer.allocateDirect` 堆外内存(回收) 关联知识:"NIO零拷贝"
     1. 确定对象何时从内存中删除，这有助于调度内存敏感任务。例如，我们可以等待一个大对象被移除，然后再加载另一个对象。
     1. 避免使用finalize方法，改进finalize过程。
     ```java
-    //
+    //参考:https://www.baeldung.com/java-phantom-reference
     static class LargeObjectFinalizer extends PhantomReference<Object> {
-        public LargeObjectFinalizer(
-        Object referent, ReferenceQueue<? super Object> q) {
+        public LargeObjectFinalizer(Object referent, ReferenceQueue<? super Object> q) {
             super(referent, q);
         }
         //自定义实现的 资源释放逻辑
@@ -304,7 +350,7 @@ buffer 2:t2
         }
         //解除引用
         largeObjects = null;
-        System.gc();
+        System.gc();//执行垃圾回收
         Reference<?> referenceFromQueue;
         for(PhantomReference<Object> reference : references){
             System.out.println(reference.isEnqueued());//返回此引用是否已被GC回收
@@ -315,3 +361,130 @@ buffer 2:t2
         }
     }
     ```
+* Reference    
+
+  参考:[深入理解JDK中的Reference原理和源码实现](https://www.cnblogs.com/throwable/p/12271653.html)
+
+  `Reference`的继承关系或者实现是由JDK定制，引用实例是由JVM创建，所以自行继承Reference实现自定义的引用类型是无意义的，但是可以继承已经存在的引用类型，如SoftReference等.
+
+  `Reference` 是 `软 弱 虚` 三种引用的共同父类
+
+  这个类不能直接子类化
+
+  `Reference` 成员变量
+  ```java
+  public abstract class Reference<T> {
+    private T referent;//保存的引用指向的对象
+    volatile ReferenceQueue<? super T> queue;//引用队列 对象如果即将被垃圾收集器回收 此队列作为通知的回调队列
+    volatile Reference next;//下一个 引用 通过此构造单向链表
+    private transient Reference<T> discovered;
+  }
+  ```
+  * 可达性
+
+    当一个对象到GC根集没有任何引用链相连时，则证明此对象是不可用的。
+    
+    不可用的对象"有机会"被判定为可以回收的对象。
+
+    在Java语言中，可以作为GC根集的对象包括下面几种:
+    1. 虚拟机栈(栈帧中的本地变量表)中引用的对象。
+    1. 方法区中常量引用的对象(在JDK1.8之后不存在方法区，也就是有可能是metaspace中常量引用的对象)。
+    1. 本地方法栈中JNI(即一般常说的Native方法)引用的对象。
+
+* ReferenceQueue   
+  存放引用的队列 保存`Reference`对象  
+
+  用于在`Reference`关联的对象引用被GC回收时, 该`Reference`对象将会被加入`ReferenceQueue`引用队列中的末尾
+
+  * ReferenceQueue使用方式
+    ```java
+    class MSoftReference extends SoftReference<MyObject>{
+        String gc_logic_name;
+        public MSoftReference(MyObject referent, ReferenceQueue q) {
+            super(referent, q);
+            gc_logic_name = referent.name;
+        }
+    }
+    class SoftReferenceExample{
+        static List<SoftReference<M>> softReferences = new ArrayList<>();
+        //引用队列旨在让我们了解垃圾收集器执行的操作。当JVM决定删除此引用的所指对象时，它将引用对象附加到引用队列中
+        static ReferenceQueue<M> queue=new ReferenceQueue();
+        static volatile boolean gcWatchThreadRun = true;
+        public SoftReferenceExample() {
+            System.out.println("Starting now...");
+            new Thread(()->{
+                MSoftReference ref;
+                while (gcWatchThreadRun) {
+                    if((ref= (MSoftReference) queue.poll())!=null) {
+                        System.out.println("GC ref:" + ref.gc_logic_name );
+                    }
+                }
+            }).start();
+            for (int i = 0; i <50000 ; i++) {
+                M softObj = new M("Soft-M-" + i);
+                softReferences.add(new MSoftReference(softObj, queue));
+            }
+            System.out.println("Completed !");
+            gcWatchThreadRun = false;
+        }
+    }
+    ```
+* ReferenceHandler
+
+  `ReferenceHandler`线程是`Reference`的静态代码创建的，所以只要`Reference`这个父类被初始化，该线程就会创建和运行，由于它是守护线程，除非JVM进程终结，否则它会一直在后台运行
+* WeakHashMap
+
+  通过`WeakReference`和`ReferenceQueue`实现的。 `WeakHashMap`的key是“弱键”，即是`WeakReference`类型的;`ReferenceQueue`是一个队列，它会保存被GC回收的“弱键”
+
+  `expungeStaleEntries()` 清理过期记录, getTable() size()和resize() 方法都会调用该方法。基本上 WeakHashMap 的每个方法都会调用 getTable()
+
+  如果弱引用所引用的对象被垃圾回收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中。 接着，WeakHashMap会根据“引用队列”，来删除“WeakHashMap中已被GC回收的‘弱键’对应的键值对”
+
+  通俗的说在 WeakHashMap 中，当某个 key 不再正常使用时，将自动移除该 Entry。
+
+  [参考](https://segmentfault.com/a/1190000039668399#item-1-6)
+  ```java
+  //JVM: -Xmx20M -verbose:gc
+  WeakHashMap<Object,Object> map = new WeakHashMap();
+  Object value = new Object();
+  for (int i = 0; i <20 ; i++) {
+    //内存不足将触发GC WeakHashMap中的key会被回收掉
+    map.put(new MyObject("Obj:" + i,new byte[1024*1024]), value);
+  }
+  System.out.println("size:"+map.size());//因为限制堆内存只有20M 最后实际打印size数量将远远小于20
+  ```  
+
+  * HashMap 配合 `WeakReference ReferenceQueue`来实现类似功能
+    ```java
+    //JVM: -Xmx20M -verbose:gc
+    Object value = new Object();
+    HashMap hashMap = new HashMap();
+    //虽然设置堆内存只有20M 但因为使用弱引用 key能够及时的被GC回收 而不会发生OOM 内存溢出
+    for (int i = 0; i <2000 ; i++) {
+        hashMap.put(new WeakReference(new MyObject("Obj:" + i, new byte[1024*1024]), queue)
+                , value);
+    }
+    System.out.println("map.size:"+hashMap.size());
+
+    Thread t1 = new Thread(() -> {
+        WeakReference<MyObject> ref;
+        try {
+            //GC时 被清除的的引用存入ReferenceQueue
+            //执行到这一行代码时 理论上已经执行了很多次GC ReferenceQueue中已经有很多WeakReference
+            while ((ref = (WeakReference<MyObject>) queue.remove(100)) != null) {
+                hashMap.remove(ref);
+            }
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    });
+
+    t1.start();
+    try{
+        t1.join();
+    }catch(InterruptedException ex){
+        ex.printStackTrace();
+    }
+    System.out.println("after map.size:"+hashMap.size());
+    ```
+  
