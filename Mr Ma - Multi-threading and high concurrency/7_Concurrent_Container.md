@@ -15,4 +15,4 @@ java 两大接口
 
     HashTable
   
-  ![java 容器](img\java_container.png "java 容器")    
+  ![java 容器](img/java_container.png "java 容器")    

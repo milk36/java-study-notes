@@ -2,7 +2,7 @@ Docker 镜像文件
 ===
 镜像是一种轻量级、可执行的独立软件包，用来打包软件运行环境和基于运行环境开发的软件，它包含运行某个软件所需的所有内容，包括代码、运行时、库、环境变量和配置文件。
 
-![镜像文件结构](img\docker_image.png "镜像文件结构")
+![镜像文件结构](img/docker_image.png "镜像文件结构")
 ### UnionFS
 
 UnionFS（联合文件系统）: Union文件系统（UnionFS）是一种分层、轻量级并且高性能的文件系统，它支持对文件系统的修改作为一次提交来一层层的叠加，同时可以将不同目录挂载到同一个虚拟文件系统下(unite several directories into a single virtual filesystem)。

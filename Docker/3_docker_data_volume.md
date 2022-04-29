@@ -34,9 +34,9 @@
     docker inspect 容器ID
     ```  
     
-    ![](img\docker_inspect_volum_info_1.png "")
+    ![](img/docker_inspect_volum_info_1.png "")
 
-    ![](img\docker_inspect_volum_info_2.png "")
+    ![](img/docker_inspect_volum_info_2.png "")
 ### 数据卷容器
 * 创建启动c3数据卷容器，使用 –v 参数 设置数据卷
   ```shell
@@ -45,7 +45,7 @@
 
   只定义 `/volume` 在宿主机上会创建一个默认的目录挂载
 
-  ![](img\docker_volume_def.png "")
+  ![](img/docker_volume_def.png "")
 
 * 创建启动 c1 c2 容器，使用 `--volumes-from` 参数 设置数据卷
   ```shell
