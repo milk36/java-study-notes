@@ -1,0 +1,40 @@
+@startmindmap
+*_ 容器
+**_ Collection
+***_ List
+****_ CopyOnWriteList
+****_ Vector -- Stack
+****_ LinkedList
+****_ ArrayList
+
+***_ Set
+****_ HashSet -- LinkedHashSet
+****_ SortedSet -- TreeSet
+****_ EnumSet
+****_ CopyOnWriteArraySet
+****_ ConcurrentSkipListSet
+
+***_ Queue
+****_ Deque
+*****_ ArrayDeque
+*****_ BlockingDeque -- LinkedBlockingDeque
+
+****_ BlockingQueue
+*****_ ArrayBlockingQueue
+*****_ PriorityBlockingQueue
+*****_ LinkedBlockingQueue
+*****_ TransferQueue -- LinkedTransferQueue
+*****_ SynchronousQueue
+
+****_ PriorityQueue
+****_ ConcurrentLinkedQueue
+****_ DelayQueue
+
+**_ Map
+***_ HashMap -- LinkedHashMap
+***_ TreeMap
+***_ WeakHashMap
+***_ IdentityHashMap
+***_ ConcurrentHashMap
+***_ ConcurrentSkipListMap
+@endmindmap
