@@ -109,7 +109,7 @@ Docker 架构
   sudo systemctl restart docker
   ```
 ### Docker命令
-![Docker command dragram](../img/dockercommand.png "Docker command dragram")
+![Docker command dragram](img/dockercommand.png "Docker command dragram")
 * Docker帮助命令
   | 命令           | 说明                                       |
   | -------------- | ------------------------------------------ |
