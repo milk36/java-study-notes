@@ -395,5 +395,59 @@
         e.printStackTrace();
       }
     }
-    ```  
+    ``` 
+  * 模拟 CAS 自旋解题
+    ```java
+    enum ReadToRun{STR_RUN,NUM_RUN}
+    volatile ReadToRun runState = STR_RUN;//volatile 确保线程可见
+
+    StringBuilder buffer = new StringBuilder();
+    new Thread(() -> {
+        for (int i = CHAR_A; i < MAX; i++) {
+            while (runState!=STR_RUN){} //没有正确的状态就一直自旋等待
+            buffer.append((char) i);
+            runState = NUM_RUN;
+        }
+    }).start();
+
+    new Thread(() -> {
+        for (int i = 1; i <= STR_26; i++) {
+            while (runState != NUM_RUN) {}
+            buffer.append(i);
+            runState = STR_RUN;
+        }
+        log.info("info:{}",buffer.toString());
+    }).start();
+    ```
+  * BlockingQueue 解题
+    ```java
+    BlockingQueue<String> strQ = new ArrayBlockingQueue<>(1);
+    BlockingQueue<String> numQ = new ArrayBlockingQueue<>(1);
+    StringBuilder buffer = new StringBuilder();
+    new Thread(() -> {
+        try{
+            for (int i = CHAR_A; i < MAX; i++) {
+                buffer.append((char) i);
+                numQ.put("OK");
+                strQ.take();//进入阻塞等待
+            }
+            numQ.put("OK");
+        }catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
+    }).start();
+    new Thread(() -> {
+        try{
+            numQ.take();
+            for (int i = 1; i <= STR_26; i++) {
+                buffer.append(i);
+                strQ.put("OK");
+                numQ.take();//进入阻塞等待
+            }
+            log.info("info:{}",buffer.toString());
+        }catch(InterruptedException ex){
+            ex.printStackTrace();
+        }
+    }).start();
+    ```
 
