@@ -50,6 +50,7 @@ java 两大接口
   * 并发量少 代码执行时间长 `Collections.synchronizedMap `等
 
   * 关键就是: 结合实际情况灵活选择
+
 ### Vector List Queue
 * Vector 内部的每个*操作数据的*方法也都有加 `synchronized`关键字 
 * List ArrayList LinkedList 非线程安全的容器
@@ -58,7 +59,8 @@ java 两大接口
 
   add 添加
   
-  poll 取值
+  poll 取值  
+
 ### ConcurrentMap  
 * ConcurrentHashMap 无序
   
@@ -72,6 +74,7 @@ java 两大接口
   1. 底层结构为链表 链表是有序的 但是有序链表查找和插入操作都比较复杂 
   1. SkipList 根据链表的容量 拿出部分关键元素 组建新的一层简化链表 实际中会划分出多个层级
   1. 当需要做插入和查询操作的时候 可以逐层的的比对 来快速的获取数据在链表中对应的位置
+
 ### CopyOnWrite
 
 写时复制  
@@ -97,6 +100,7 @@ public boolean add(E e) {
     }
 }
 ```
+
 ### Queue BlockingQueue
 Queue与List的区别
   1. 添加了对线程友好的 API offer peek poll
