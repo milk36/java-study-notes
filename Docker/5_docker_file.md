@@ -103,3 +103,27 @@ docker load -i milk_tomcat.tar
 | ONBUILD     | 触发器                   | 当存在ONBUILD关键字的镜像作为基础镜像的时候 当执行FROM完成之后 会执行 ONBUILD的命令 但是不影响当前镜像 用处也不怎么大 |
 | STOPSIGNAL  | 发送信号量到宿主机       | 该STOPSIGNAL指令设置将发送到容器的系统调用信号以退出。       |
 | SHELL       | 指定执行脚本的shell      | 指定RUN CMD ENTRYPOINT 执行命令的时候 使用的shell            |
+#### 相关指令的区别
+* [Dockerfile 参考](https://docs.docker.com/engine/reference/builder/)
+* CMD 和 ENTRYPOINT
+
+  1.CMD
+
+    Dockerfile中可以有多个CMD指令，但只有最后一个生效，CMD会被docker run之后的参数替换掉
+
+  1.ENTRYPOINT
+
+    有别于`CMD`命令，`ENTRYPOINT`命令是在 `docker run` 之后的参数会被当做参数传递给 ENTRYPOINT, 之后形成新的组合命令. 通过`curl`指令来介绍这个案例。
+
+    ```bash
+    FROM centos
+
+    RUN yum install -y curl
+
+    ENTRYPOINT [ "curl", "-s", "http://www.baidu.com" ]
+    ```
+
+    后续还可以 加`-i`参数 查看响应报文头 ; `ENTRYPOINT`不会覆盖，而是组合成了一个新的命令。
+* COPY 和 ADD  
+  1. COPY 把文件从宿主机中复制到 镜像里面去
+  1. ADD 将宿主机目录下的文件拷贝进镜像且ADD命令*会自动处理URL和解压tar压缩包*
