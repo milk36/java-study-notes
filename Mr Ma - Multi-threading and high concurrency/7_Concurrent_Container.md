@@ -1,7 +1,8 @@
 并发/容器
 ===
   ![java 容器](img/java_container.png "java 容器")    
-### 容器
+## 容器
+
 容器牵扯到 : `数据结构 算法 高并发`
 
 物理上存储两种结构
@@ -20,7 +21,7 @@ java 两大接口
 
     HashTable
   
-#### Hashtable
+### Hashtable
 * vector 和 Hashtable 自带锁，基本不用(属于早期JDK定义的容器类)
 * Hashtable vs `Collections.synchronizedMap(new HashMap<>())` vs ConcurrentHashMap
 
@@ -49,7 +50,7 @@ java 两大接口
   * 并发量少 代码执行时间长 `Collections.synchronizedMap `等
 
   * 关键就是: 结合实际情况灵活选择
-#### Vector List Queue
+### Vector List Queue
 * Vector 内部的每个*操作数据的*方法也都有加 `synchronized`关键字 
 * List ArrayList LinkedList 非线程安全的容器
 * 包装 List 成为同步容器 `Collections.synchronizedList(new LinkedList<>())`
@@ -58,7 +59,7 @@ java 两大接口
   add 添加
   
   poll 取值
-#### ConcurrentMap  
+### ConcurrentMap  
 * ConcurrentHashMap 无序
   
   TreeMap 红黑树 排序的 因为cas操作实现太复杂 而没有类似一个`ConcurrentTreeMap`的这样一个类
@@ -71,7 +72,8 @@ java 两大接口
   1. 底层结构为链表 链表是有序的 但是有序链表查找和插入操作都比较复杂 
   1. SkipList 根据链表的容量 拿出部分关键元素 组建新的一层简化链表 实际中会划分出多个层级
   1. 当需要做插入和查询操作的时候 可以逐层的的比对 来快速的获取数据在链表中对应的位置
-#### CopyOnWrite
+### CopyOnWrite
+
 写时复制  
 
 适合场景: <big>写的情况比较少 读的情况比较多</big>
@@ -95,7 +97,7 @@ public boolean add(E e) {
     }
 }
 ```
-#### Queue BlockingQueue
+### Queue BlockingQueue
 Queue与List的区别
   1. 添加了对线程友好的 API offer peek poll
   1. `BlockingQueue ` put take -> 阻塞 (用于实现 生产消费者模型)
