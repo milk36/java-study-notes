@@ -1,0 +1,16 @@
+@startuml
+interface Executor {
+  void execute(Runnable command)
+}
+
+interface ExecutorService{
+  void shutdown()
+  List<Runnable> shutdownNow()
+  boolean isShutdown()
+  boolean isTerminated()
+  boolean awaitTermination(long timeout, TimeUnit unit)
+}
+Executor <|--ExecutorService
+class ThreadPoolExecutor implements ExecutorService {
+}
+@enduml
