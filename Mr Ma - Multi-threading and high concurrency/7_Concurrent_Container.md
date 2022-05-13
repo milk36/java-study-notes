@@ -112,6 +112,8 @@ Queue与List的区别
   线程安全的接口
     1. offer 添加 在此队列的尾部插入指定元素。由于队列是无界的，这个方法永远不会返回false 。
     1. poll 取值 并删除 检索并删除此队列的头部，如果此队列为空，则返回null 。
+
+        可设置超时时间 `E poll(long timeout, TimeUnit unit)`等待超时 则返回null
     1. peek 取值 不删除 检索但不删除此队列的头部，如果此队列为空，则返回null 
 * LinkedBlockingQueue
 
@@ -122,6 +124,8 @@ Queue与List的区别
   阻塞的接口:
     1. put 阻塞的 在此队列的尾部插入指定元素
     1. take 阻塞的 检索并删除此队列的头部
+
+        会一直阻塞等待
 * ArrayBlockingQueue
 
   实现自 BlockingQueue 有界队列 可以设定队列size
