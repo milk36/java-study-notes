@@ -1,6 +1,7 @@
 ThreadPoolExecute源码
 ===
 ## 源码解析
+![](img/tpe.png)
 ### 常量/变量解释
 ```java
 // 1. `ctl`，可以看做一个int类型的数字，高3位表示线程池状态，低29位表示worker数量
@@ -42,6 +43,9 @@ private static boolean runStateAtLeast(int c, int s) {
 * ctl 值
 
   高3位表示线程池状态，低29位表示worker数量
+
+  1. runStateOf() 获取线程池状态
+  1. workerCountOf() 获取工作线程数量
 * 线程池的5中状态
   1. RUNNING：正常运行的；
   1. SHUTDOWN：调用了shutdown方法了进入了shutdown状态；
@@ -93,7 +97,7 @@ public void execute(Runnable command) {
       // 线程池状态不是RUNNING状态，说明执行过shutdown命令，需要对新加入的任务执行reject()操作。
       // 这儿为什么需要recheck，是因为任务入队列前后，线程池的状态可能会发生变化。
       if (! isRunning(recheck) && remove(command))
-          reject(command);
+          reject(command);//线程池处于非运行状态
       // 这儿为什么需要判断0值，主要是在线程池构造方法中，核心线程数允许为0
       else if (workerCountOf(recheck) == 0)
           addWorker(null, false);
@@ -104,7 +108,7 @@ public void execute(Runnable command) {
   // 2. addWorker第2个参数表示是否创建核心线程
   // 3. addWorker返回false，则说明任务执行失败，需要执行reject操作
   else if (!addWorker(command, false))
-      reject(command);
+      reject(command);//核心线程已满 工作队列已满 临时线程也已满
 }
 ```
 * 分3步逻辑执行:

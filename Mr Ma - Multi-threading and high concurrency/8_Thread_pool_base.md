@@ -115,6 +115,8 @@
 
 ![](img/java-thread-x-executors-1.png)
 
+ThreadPoolExecutor 简单的并行操作 主要是为了执行时间不确定的任务（I/O 或定时任务等）
+
 线程池结构: 一个线程集合workerSet和一个阻塞队列workQueue
 
 线程池会先将任务放入workQueue中。workerSet中的线程会不断的从workQueue中获取线程然后执行。
