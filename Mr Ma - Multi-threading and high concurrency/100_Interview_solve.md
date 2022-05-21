@@ -450,4 +450,44 @@
         }
     }).start();
     ```
+### 自定义CAS自旋锁
+```java
+public class DiyLock{
+  static final Unsafe UNSAFE;
+  static final long LOCK_STATE_OFFSET;
 
+  static{
+    try{
+      Field theUnsafe = Unsafe.class.getDeclaredFiled("theUnsafe");
+      theUnsafe.setAccessible(true);
+      UNSAFE = (Unsafe) theUnsafe.get(null);
+      Class<DiyLock> diyLockClass = DiyLock.class;
+      LOCK_STATE_OFFSET = UNSAFE.staticFieldOffset(diyLockClass.getDeclaredFile("lockSstate"));
+    }catch(Exception e){
+      throw new RuntimeException(e);
+    }
+  }
+
+  static volatile int lockState = 1;
+  static int a = 0;
+
+  public static void lock(){
+    for(;;){
+      if(UNSAFE.compareAndSwapInt(DiyLock.class,LOCK_STATE_OFFSET,1,0)){
+        break;
+      }
+      Thread.yield();//让出CPU资源 这样可以避免100%CPU的占用
+    }
+  }
+
+  public static void unlock(){
+    lockState = 1;
+  }
+
+  public static void inc(){
+    lock();
+    a++;
+    unlock();
+  }
+}
+```
