@@ -98,7 +98,8 @@ public void execute(Runnable command) {
       // 这儿为什么需要recheck，是因为任务入队列前后，线程池的状态可能会发生变化。
       if (! isRunning(recheck) && remove(command))
           reject(command);//线程池处于非运行状态
-      // 这儿为什么需要判断0值，主要是在线程池构造方法中，核心线程数允许为0
+      // 这儿为什么需要判断0值，主要是在线程池构造方法中，核心线程数允许为0 
+      // 可能刚好工作线程都被回收掉了 这时候需要启动新的工作线程 就来到这里
       else if (workerCountOf(recheck) == 0)
           addWorker(null, false);
   }
@@ -120,7 +121,7 @@ public void execute(Runnable command) {
 ```java
 private boolean addWorker(Runnable firstTask, boolean core) {
   retry:
-  // 外层自旋
+  // 外层自旋 整个内容就是判断线程池状态 如果成功线程数量加1
   for (;;) {
       int c = ctl.get();
       int rs = runStateOf(c);
