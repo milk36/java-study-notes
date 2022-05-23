@@ -164,6 +164,8 @@ Queue与List的区别
 * DelayQueue
 
   实现自 BlockingQueue 可以实现在时间上的排序 DelayQueue本质上用的是一个PriorityQueue
+
+  DelayQueue 对元素进行持有直到一个特定的延迟到期。注入其中的元素必须实现 java.util.concurrent.Delayed 接口，该接口定义
   ```java
   class DelayObject implements Delayed{
     String data;
@@ -207,6 +209,64 @@ Queue与List的区别
   DelayObject{data='t1', delayTime=3000}
   DelayObject{data='t3', delayTime=5000}
   ```
+  DelayQueue 将会在每个元素的 getDelay() 方法返回的值的时间段之后才释放掉该元素。如果返回的是 0 或者负值，延迟将被认为过期，该元素将会在 DelayQueue 的下一次 take  被调用的时候被释放掉。
+  * 源码逻辑
+    1. `take()` 获取队列中已经到期任务 这个过程会阻塞 直到返回一个任务对象
+    
+        ```java
+        private final Condition available = lock.newCondition();
+
+        public E take() throws InterruptedException {
+            final ReentrantLock lock = this.lock;
+            lock.lockInterruptibly();
+            try {
+                for (;;) {
+                    E first = q.peek();//检索队列头部 但不删除
+                    if (first == null)
+                        available.await();//如果队列头为空 则让其等待
+                    else {
+                        long delay = first.getDelay(NANOSECONDS);//头部不为空 获取延迟时间
+                        if (delay <= 0L)//判断是否已经延期
+                            return q.poll();//如果延期则立即检索 并从头部删除 返回任务对象
+                        first = null; // don't retain ref while waiting 这里估计还是帮助GC
+                        if (leader != null)
+                            available.await();//到这里说明前面已有线程在等待任务 直接进入等待状态即可
+                        else {
+                            Thread thisThread = Thread.currentThread();
+                            leader = thisThread;
+                            try {
+                                available.awaitNanos(delay);//第一个线程过来 头部任务还未到期 继续等待
+                            } finally {
+                                if (leader == thisThread)
+                                    leader = null;
+                            }
+                        }
+                    }
+                }
+            } finally {
+                if (leader == null && q.peek() != null)
+                    available.signal();
+                lock.unlock();
+            }
+        }
+        ```
+    1. `offer()`  添加新任务到队列中
+        ```java
+        public boolean offer(E e) {
+            final ReentrantLock lock = this.lock;
+            lock.lock();
+            try {
+                q.offer(e);//添加到 PriorityQueue 队列中
+                if (q.peek() == e) {//刚添加的任务 == 头部
+                    leader = null;
+                    available.signal();//唤醒等待条件 后续在take()逻辑中可能依然会 available.awaitNanos(delay) 做等待
+                }
+                return true;
+            } finally {
+                lock.unlock();
+            }
+        }
+        ```
 * SynchronousQueue
 
   实现自 BlockingQueue 容量为0 专门用于线程之间的内容传递 类似 Exchanger(它可以双向传递)的功能

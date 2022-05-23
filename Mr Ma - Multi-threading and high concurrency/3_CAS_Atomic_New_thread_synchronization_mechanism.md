@@ -68,6 +68,7 @@ CAS Atomic /新线程同步机制
     ```java
     Lock lock = new ReentrantLock();
     Condition condition = lock.newCondition();
+    condition.await();//它在阻塞当前线程之前还干了两件事，一是把当前线程添加到条件队列中，二是“完全”释放锁，也就是让state状态变量变为0，然后才是调用LockSupport.park()阻塞当前线程
     ```
   * 注意:加锁 释放锁 操作需要在 `try{}finally{}` 代码快中执行 
     
@@ -350,6 +351,7 @@ CAS Atomic /新线程同步机制
     1. `notify()` 方法也必须在`synchronized`代码块中使用, 
     1. `synchronized()、wait()、notify()` 对象必须一致, 一个 `synchronized` 代码块中只能有一个线程调用 `wait() 或 notify()`
     1. 当对象的等待队列中有多个线程时，`notify()`只能随机选择一个线程唤醒，无法唤醒指定的线程。
+    1. 使用 `wait()` 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 `notify()` 或者 `notifyAll()` 来唤醒挂起的线程，造成死锁。
   * LockSupport 的对应特点:
     1. LockSupport不需要synchronized加锁 就可以实现线程的阻塞和唤醒
     1. `unpack(thread)`  <mark>可以优先于</mark> `pack()`执行, 并且线程不会阻塞

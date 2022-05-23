@@ -452,43 +452,106 @@
     ```
 ### 自定义CAS自旋锁
 
-  ```java
-  public class DiyLock{
-    static final Unsafe UNSAFE;
-    static final long LOCK_STATE_OFFSET;
+  缺点: 不支持锁重入
 
-    static{
-      try{
-        Field theUnsafe = Unsafe.class.getDeclaredFiled("theUnsafe");
-        theUnsafe.setAccessible(true);
-        UNSAFE = (Unsafe) theUnsafe.get(null);
-        Class<DiyLock> diyLockClass = DiyLock.class;
-        LOCK_STATE_OFFSET = UNSAFE.staticFieldOffset(diyLockClass.getDeclaredFile("lockSstate"));
-      }catch(Exception e){
-        throw new RuntimeException(e);
+  测试发现 Unsafe CAS 操作快于 VarHandle CAS
+  * Unsafe CAS 的实现
+    ```java
+    class DiyUnsafeCASLock {
+
+      static final Unsafe UNSAFE;
+      static final long LOCK_STATE_OFFSET;
+
+      static {
+        try {
+          Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+          theUnsafe.setAccessible(true);
+          UNSAFE = (Unsafe) theUnsafe.get(null);
+          Class<DiyUnsafeCASLock> lockClass = DiyUnsafeCASLock.class;
+          LOCK_STATE_OFFSET = UNSAFE.staticFieldOffset(lockClass.getDeclaredField("lockState"));
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+      static volatile int lockState = 1;
+      public static void lock() {
+        for (; ; ) {
+          if (UNSAFE.compareAndSwapInt(DiyUnsafeCASLock.class, LOCK_STATE_OFFSET, 1, 0)) {
+            break;
+          }
+          Thread.yield();//让出CPU资源 这样可以避免100%CPU的占用
+        }
+      }
+
+      public static void unlock() {
+        lockState = 1;
+      }
+
+      static int count = 0;
+
+      public static void main() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        TimeInterval interval = DateUtil.timer();
+        for (int i = 0; i < 10; i++) {
+          service.execute(()->{
+            for (int j = 0; j <MAX_COUNT ; j++) {
+              DiyUnsafeCASLock.lock();
+              count++;
+              DiyUnsafeCASLock.unlock();
+            }
+          });
+        }
+        service.shutdown();
+        service.awaitTermination(1, TimeUnit.MINUTES);
+        System.out.println(DiyUnsafeCASLock.class.getSimpleName()+" count=" + count+" time:"+interval.interval());
       }
     }
+    ```
+  * VarHandle CAS实现
+    ```java
+    class DiyVarHandleCASLock {
+      private static final VarHandle LOCK_STATE;
+      static {
+        try {
+          MethodHandles.Lookup l = MethodHandles.lookup();
+          LOCK_STATE = l.findStaticVarHandle(DiyVarHandleCASLock.class, "lockState", int.class);
+        } catch (ReflectiveOperationException e) {
+          throw new ExceptionInInitializerError(e);
+        }
+      }
 
-    static volatile int lockState = 1;
-    static int a = 0;
+      static volatile int lockState = 1;
 
-    public static void lock(){
-      for(;;){
-        if(UNSAFE.compareAndSwapInt(DiyLock.class,LOCK_STATE_OFFSET,1,0)){
-          break;
+      public static void lock() {
+        for (; ; ) {
+          if (LOCK_STATE.compareAndSet( 1, 0)) {
+            break;
+          }
         }
         Thread.yield();//让出CPU资源 这样可以避免100%CPU的占用
       }
-    }
 
-    public static void unlock(){
-      lockState = 1;
-    }
+      public static void unlock() {
+        lockState = 1;
+      }
 
-    public static void inc(){
-      lock();
-      a++;
-      unlock();
+      static int count = 0;
+
+      public static void main() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        TimeInterval interval = DateUtil.timer();
+        for (int i = 0; i < 10; i++) {
+          service.execute(()->{
+            for (int j = 0; j < MAX_COUNT; j++) {
+              lock();
+              count++;
+              unlock();
+            }
+          });
+        }
+        service.shutdown();
+        service.awaitTermination(1, TimeUnit.MINUTES);
+        System.out.println(DiyVarHandleCASLock.class.getSimpleName() + " count=" + count + " time:" + interval.interval());
+      }
     }
-  }
-  ```
+    ```  
