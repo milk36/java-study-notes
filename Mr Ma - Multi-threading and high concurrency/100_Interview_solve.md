@@ -454,7 +454,9 @@
 
   缺点: 不支持锁重入
 
-  测试发现 Unsafe CAS 操作快于 VarHandle CAS
+  测试发现 Unsafe CAS 操作快于 VarHandle CAS 静态字段操作
+
+  但是 VarHandle CAS 私有字段还是非常快 与Unsafe差不多
   * Unsafe CAS 的实现
     ```java
     class DiyUnsafeCASLock {
@@ -507,31 +509,34 @@
       }
     }
     ```
-  * VarHandle CAS实现
+  * VarHandle CAS实现 
+  
+    需要JDK 1.9
+
+    > 如果IDEA报错 `找不到符号` 需要设置下对应的JVM版本 比如:Gradle JVM -> JVM 1.9 以上
     ```java
     class DiyVarHandleCASLock {
       private static final VarHandle LOCK_STATE;
       static {
         try {
-          MethodHandles.Lookup l = MethodHandles.lookup();
-          LOCK_STATE = l.findStaticVarHandle(DiyVarHandleCASLock.class, "lockState", int.class);
+          LOCK_STATE = MethodHandles.lookup().findVarHandle(DiyVarHandleCASLock.class, "lockState", int.class);
         } catch (ReflectiveOperationException e) {
           throw new ExceptionInInitializerError(e);
         }
       }
 
-      static volatile int lockState = 1;
+      private volatile int lockState = 1;
 
-      public static void lock() {
+      public void lock() {
         for (; ; ) {
-          if (LOCK_STATE.compareAndSet( 1, 0)) {
+          if (LOCK_STATE.compareAndSet(this,1, 0)) {
             break;
           }
+          Thread.yield();
         }
-        Thread.yield();//让出CPU资源 这样可以避免100%CPU的占用
       }
 
-      public static void unlock() {
+      public void unlock() {
         lockState = 1;
       }
 
@@ -543,9 +548,9 @@
         for (int i = 0; i < 10; i++) {
           service.execute(()->{
             for (int j = 0; j < MAX_COUNT; j++) {
-              lock();
+              this.lock();
               count++;
-              unlock();
+              this.unlock();
             }
           });
         }

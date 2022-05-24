@@ -230,12 +230,12 @@ Queue与List的区别
                             return q.poll();//如果延期则立即检索 并从头部删除 返回任务对象
                         first = null; // don't retain ref while waiting 这里估计还是帮助GC
                         if (leader != null)
-                            available.await();//到这里说明前面已有线程在等待任务 直接进入等待状态即可
+                            available.await();//到这里说明前面已有线程在等待任务 直接进入等待状态即可 并释放锁
                         else {
                             Thread thisThread = Thread.currentThread();
                             leader = thisThread;
                             try {
-                                available.awaitNanos(delay);//第一个线程过来 头部任务还未到期 继续等待
+                                available.awaitNanos(delay);//第一个线程过来 头部任务还未到期 继续等待 并释放锁
                             } finally {
                                 if (leader == thisThread)
                                     leader = null;
