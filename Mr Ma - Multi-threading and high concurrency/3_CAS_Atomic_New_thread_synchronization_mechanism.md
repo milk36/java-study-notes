@@ -1,7 +1,7 @@
 CAS Atomic /新线程同步机制
 ===
-### CAS 
-* CAS -> Compare And Swap 比较替换
+## CAS 
+### CAS -> Compare And Swap 比较替换
   ```
   cas(V, Expected, NewValue)
   - if V == E
@@ -15,7 +15,7 @@ CAS Atomic /新线程同步机制
   只有 V 目标值 == Expected 预期值, 才能让 V 目标值 = NewValue
 
   其他情况重试/失败
-* ABA问题
+### ABA问题
 
   V 目标值 在操作之前已经被修改过多个版本, 可能已经从 1 到 10,然后又从10 到 1 
 
@@ -30,7 +30,7 @@ CAS Atomic /新线程同步机制
   static AtomicMarkableReference<Order> orderRef = new AtomicMarkableReference<>(new Order(), false);
   orderRef.compareAndSet(old, o, false, true);
   ```
-* Unsafe
+### Unsafe
   
   Atomic内部操作都依赖于Unsafe
 
@@ -50,29 +50,29 @@ CAS Atomic /新线程同步机制
   * 模仿c/c++操作内存
 
     c -> malloc free c++ -> new delete
-### 新线程同步机制
-* AtomicLong
+## 新线程同步机制
+### AtomicLong
 
   CAS 自旋锁 
 
   比 `synchronized`快的原因: sync可能会升级到重量级锁, 所以效率偏低
-* LongAdder
+### LongAdder
 
   CAS 自旋锁 分段锁
 
   线程数小了 循环数少了 未必有优势
-* ReentrantLock
+### ReentrantLock
 
   可重入锁 与`synchronized `使用方式类似但功能更多 可以替代 `synchronized`
   * Condition 条件 `condition.await()` 和 `condition.signalAll()/single()` 类似 -> `wait 和 notifyAll / notify`
     ```java
     Lock lock = new ReentrantLock();
     Condition condition = lock.newCondition();
-    condition.await();//它在阻塞当前线程之前还干了两件事，一是把当前线程添加到条件队列中，二是“完全”释放锁，也就是让state状态变量变为0，然后才是调用LockSupport.park()阻塞当前线程
+    condition.await();//它在阻塞当前线程之前还干了两件事,一是把当前线程添加到条件队列中,二是“完全”释放锁,也就是让state状态变量变为0,然后才是调用LockSupport.park()阻塞当前线程
     ```
   * 注意:加锁 释放锁 操作需要在 `try{}finally{}` 代码快中执行 
     
-    锁【lock.lock】必须紧跟try代码块，且unlock要放到finally第一行 (阿里代码规范)
+    锁【lock.lock】必须紧跟try代码块,且unlock要放到finally第一行 (阿里代码规范)
 
     <big>确保出现异常的情况下 也能正常的释放锁</big>
     ```java
@@ -132,7 +132,7 @@ CAS Atomic /新线程同步机制
     ```java
     Lock lock = new ReentrantLock(true);//参数为true表示为公平锁, 默认为非公平锁
     ``` 
-* CountDownLatch 门栓 计数器 类似Thread.join()
+### CountDownLatch 门栓 计数器 类似Thread.join()
 
   countDown await 两个方法配合使用
   ```java
@@ -148,7 +148,7 @@ CAS Atomic /新线程同步机制
     e.printStackTrace();
   }
   ```
-* CyclicBarriar 循环栅栏  
+### CyclicBarriar 循环栅栏  
 
   什么时候人满了 就把栅栏推倒 然后全部放出去; 之后栅栏又重新起来 再来人 满了之后又继续
   ```java
@@ -166,7 +166,7 @@ CAS Atomic /新线程同步机制
     });
   }
   ```
-* Phaser (/ˈfeɪzər/)  阶段
+### Phaser (/ˈfeɪzər/)  阶段
 
   类似CountDownLatch 和 CyclicBarrier的结合
 
@@ -218,7 +218,7 @@ CAS Atomic /新线程同步机制
     }).start();
   }
   ```
-* ReadWriteLock 读写锁 
+### ReadWriteLock 读写锁 
 
   读写锁的概念其实就是 共享锁 和 排他锁
 
@@ -236,7 +236,7 @@ CAS Atomic /新线程同步机制
   static Lock readLock = readWriteLock.readLock();
   static Lock writeLock = readWriteLock.writeLock();
   ```
-* Semaphore (/ˈseməfɔːr/ ) 信号  
+### Semaphore (/ˈseməfɔːr/ ) 信号  
 
   设置信号数量 几盏信号灯 内部依赖AQS队列实现
 
@@ -274,7 +274,7 @@ CAS Atomic /新线程同步机制
   }).start();
   
   ```
-* Exchanger  交换
+### Exchanger  交换
 
   **只能用于两个线程之间的数据交换** 调用方法 `exchanger()` 是阻塞的
 
@@ -284,7 +284,7 @@ CAS Atomic /新线程同步机制
   new Thread(()->System.out.println( ex.exchange("t1", 250, TimeUnit.MILLISECONDS))).start();
   new Thread(()->System.out.println( ex.exchange(new String()))).start();
   ```
-* LockSupport
+### LockSupport
 
   通过调用 `LockSupport.park()` 和 `LockSupport.unpark(thread)` 来实现线程的阻塞和唤醒
 
@@ -350,19 +350,52 @@ CAS Atomic /新线程同步机制
     1. 因为`wait()`方法需要释放锁, 所以必须在`synchronized`代码块中使用 否则会抛出异常  `IllegalMonitorStateException`
     1. `notify()` 方法也必须在`synchronized`代码块中使用, 
     1. `synchronized()、wait()、notify()` 对象必须一致, 一个 `synchronized` 代码块中只能有一个线程调用 `wait() 或 notify()`
-    1. 当对象的等待队列中有多个线程时，`notify()`只能随机选择一个线程唤醒，无法唤醒指定的线程。
-    1. 使用 `wait()` 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 `notify()` 或者 `notifyAll()` 来唤醒挂起的线程，造成死锁。
+    1. 当对象的等待队列中有多个线程时,`notify()`只能随机选择一个线程唤醒,无法唤醒指定的线程。
+    1. 使用 `wait()` 挂起期间,线程会释放锁。这是因为,如果没有释放锁,那么其它线程就无法进入对象的同步方法或者同步控制块中,那么就无法执行 `notify()` 或者 `notifyAll()` 来唤醒挂起的线程,造成死锁。
   * LockSupport 的对应特点:
     1. LockSupport不需要synchronized加锁 就可以实现线程的阻塞和唤醒
     1. `unpack(thread)`  <mark>可以优先于</mark> `pack()`执行, 并且线程不会阻塞
-    1. 如果一个线程处于等待状态，连续调用了两次`park()`方法，就会使该线程永远无法被唤醒 ??? 两次park却需要消费两个凭证，但我们有且只有一个凭证。
+    1. 如果一个线程处于等待状态,连续调用了两次`park()`方法,就会使该线程永远无法被唤醒 ??? 两次park却需要消费两个凭证,但我们有且只有一个凭证。
   * `park() 和 unpark()` 的方法实现由Unsafe类提供
 
     原理是通过一个变量作为标识, 变量在0 , 1之间来回切换
 
-    当调用`park()`方法时，会将_counter置为0，同时判断前值，等于0说明前面被park过，则直接进入排队，否则将使该线程阻塞。
+    当调用`park()`方法时,会将_counter置为0,同时判断前值,等于0说明前面被park过,则直接进入排队,否则将使该线程阻塞。
 
-    当调用`unpark()`方法时，会将_counter置为1，同时判断前值，小于1会进行线程唤醒，否则直接退出。
-### syncronized 和 ReentrantLock 的不同
+    当调用`unpark()`方法时,会将_counter置为1,同时判断前值,小于1会进行线程唤醒,否则直接退出。
+## 各种锁操作的区别    
+### `syncronized` 和 `ReentrantLock` 的不同
 * syncronized : 系统自带 系统自动加锁 自动解锁 默认四种锁状态的升级
 * ReentrantLock : 需要手动加锁 手动解锁 可以出现多个不同的等待队列 CAS实现
+### `Object.wait()` 和 `Condition.await()`的区别
+  Object.wait()和Condition.await()的原理是基本一致的,
+  
+  不同的是Condition.await()底层是调用 `LockSupport.park()`来实现阻塞当前线程的。 
+
+  实际上,它在阻塞当前线程之前还干了两件事:  
+  1. 把当前线程添加到条件队列中,  
+  1. “完全”释放锁,也就是让`AQS.state` 状态变量变为0,然后才是调用`LockSupport.park()`阻塞当前线程
+### `Thread.sleep()` 和 `Object.wait()`的区别
+> 他们俩最大的区别就是Thread.sleep()不会释放锁资源,Object.wait()会释放锁资源
+1. Thread.sleep()不会释放占有的锁,Object.wait()会释放占有的锁;
+1. Thread.sleep()必须传入时间,Object.wait()可传可不传,不传表示一直阻塞下去;
+1. Thread.sleep()到时间了会自动唤醒,然后继续执行;
+1. Object.wait()不带时间的,需要另一个线程使用Object.notify()唤醒;
+1. Object.wait()带时间的,假如没有被notify,到时间了会自动唤醒,这时又分好两种情况,一是立即获取到了锁,线程自然会继续执行;
+二是没有立即获取锁,线程进入同步队列等待获取锁;
+### `Thread.sleep()`和`LockSupport.park()`的区别
+1. 从功能上来说,Thread.sleep()和LockSupport.park()方法类似,都是阻塞当前线程的执行,且都 <u>不会释放当前线程占有的锁资源</u>;
+1. Thread.sleep()没法从外部唤醒,只能自己醒过来;
+1. LockSupport.park()方法可以被另一个线程调用LockSupport.unpark()方法唤醒;
+1. Thread.sleep()方法声明上抛出了InterruptedException中断异常,所以调用者需要捕获这个异常或者再抛出;
+1. LockSupport.park()方法不需要捕获中断异常;
+1. Thread.sleep()本身就是一个native方法;
+1. LockSupport.park()底层是调用的Unsafe的native方法;
+### `Object.wait()`和`LockSupport.park()`的区别
+> park()/unpark()底层的原理是“二元信号量”,你可以把它相像成只有一个许可证的Semaphore,只不过这个信号量在重复执行unpark()的时候也不会再增加许可证,最多只有一个许可证
+1. Object.wait()方法需要在synchronized块中执行;
+1. LockSupport.park()可以在任意地方执行;
+1. Object.wait()方法声明抛出了中断异常,调用者需要捕获或者再抛出;
+1. LockSupport.park()不需要捕获中断异常;
+1. Object.wait()不带超时的,需要另一个线程执行notify()来唤醒,但不一定继续执行后续内容;
+1. LockSupport.park()不带超时的,需要另一个线程执行unpark()来唤醒,一定会继续执行后续内容;
