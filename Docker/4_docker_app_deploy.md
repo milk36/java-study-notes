@@ -145,4 +145,17 @@ Docker 应用部署
   ```shell
   docker run -id --name=c_redis -p 6379:6379 redis:5.0
   ```  
+* 修改redis密码
+  ```shell
+  redis-cli
+
+  #查看现有密码
+  127.0.0.1:6379> config get requirepass
+
+  #设置密码
+  127.0.0.1:6379>config set requirepass XXX(XXX为你要设置的密码)
+
+  #带权限进入redis命令行
+  redis-cli -h 127.0.0.1 -p 6379 -a XXX
+  ```
   
