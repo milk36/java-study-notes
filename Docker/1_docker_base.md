@@ -239,7 +239,7 @@ Docker 架构
   docker restart 容器ID或者名称
   ```  
 * 停止容器
-  ```shel
+  ```shell
   docker stop 容器ID或者名称
 
   //强制停止容器处理方式
