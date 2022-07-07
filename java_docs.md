@@ -8,3 +8,5 @@ java官方文档
 * [JVM启动参数 -- 1.8](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html)
 * [G1垃圾收集器调优](https://www.oracle.com/technical-resources/articles/java/g1gc.html)
 * [G1垃圾收集器](https://docs.oracle.com/en/java/javase/17/gctuning/garbage-first-g1-garbage-collector1.html#GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573)
+* [Java中9种常见的CMS GC问题分析与解决 - 美团技术博客](https://tech.meituan.com/2020/11/12/java-9-cms-gc.html)
+* [Java Hotspot G1 GC的一些关键技术 - 美团技术博客](https://tech.meituan.com/2016/09/23/g1.html)
