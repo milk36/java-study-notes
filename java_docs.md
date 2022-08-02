@@ -1,4 +1,4 @@
-java官方文档
+技术文档汇总
 ---
 ### Help Center
 * [官方帮助文档中心](https://docs.oracle.com/en/)
@@ -15,3 +15,7 @@ java官方文档
   * [新一代垃圾回收器ZGC的探索与实践](https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html)
   * [Spring Boot引起的“堆外内存泄漏”排查及经验总结 - 美团技术博客](https://tech.meituan.com/2019/01/03/spring-boot-native-memory-leak.html)
   * [Netty堆外内存泄露排查盛宴 - 美团技术博客](https://tech.meituan.com/2018/10/18/netty-direct-memory-screening.html)
+* 其他技术文档
+  * [CMS和G1详解](https://blog.csdn.net/qq_16320025/article/details/105564003)
+### 面试八股文
+* [JVM八股文背诵版](https://zhuanlan.zhihu.com/p/366838328) 
