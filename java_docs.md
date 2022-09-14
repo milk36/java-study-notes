@@ -2,6 +2,7 @@
 ---
 ### Help Center
 * [官方帮助文档中心](https://docs.oracle.com/en/)
+* [Java® 虚拟机规范 Java SE 18 版](https://docs.oracle.com/javase/specs/jvms/se18/html/index.html)
 ### JVM 调优
 * Oracle官方
   * [HotSpot 虚拟机垃圾收集调优指南 - 17](https://docs.oracle.com/en/java/javase/17/gctuning/index.html)
