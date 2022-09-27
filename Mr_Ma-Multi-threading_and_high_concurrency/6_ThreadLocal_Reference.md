@@ -1,6 +1,9 @@
 ThreadLocal , 强软弱虚 引用
 ===
 ### ThreadLocal
+
+[ThreadLocal的作用以及应用场景](https://mp.weixin.qq.com/s/klhLeoVgPKzRoTVSBmjFFA)
+
 ThreadLocal 在多线程中为每一个线程创建单独的变量副本的类; 
 
 当使用ThreadLocal来维护变量时, ThreadLocal会为每个线程创建<big>单独的变量副本</big>, 避免因多线程操作共享变量而导致的数据不一致的情况。

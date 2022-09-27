@@ -8,6 +8,8 @@ JMH Java基准测试工具套件
 [官方例子](http://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/)
 
 [性能调优必备利器之 JMH](https://www.cnblogs.com/wupeixuan/p/13091381.html)
+
+[JMH 使用说明](https://mp.weixin.qq.com/s/hJE4lneGppZ8M096_ALkxA)
 ## gradle 配置
 * JMH Gradle Plugin 插件
 
