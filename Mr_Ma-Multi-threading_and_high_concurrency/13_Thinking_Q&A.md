@@ -185,3 +185,41 @@ public class DeathLockTest {
 ```
 ## 9. 写一个程序，在main线程中启动100个线程，100个线程完成后，主线程打印“完成”，使用join()和countdownlatch都可以完成，请比较异同。
 ## 10. 一个高效的游戏服务器应该如何设计架构？
+## 11. Thread while(true) 循环中是否应该添加 Thread.sleep 相关问题
+* [为什么没有“Thread.sleep”的“while（true）”在Linux上会导致100%的CPU使用率，而在Windows上不会？](https://stackoverflow.com/questions/14579124/why-does-whiletrue-without-thread-sleep-cause-100-cpu-usage-on-linux-but)
+  > 当top使用 `Shift+i` 运行时，您可以切换IRIX模式。这将使数字匹配。
+* 有趣的问题 -- [Thread.sleep 为什么在 lambda表达式中不需要 try catch InterruptedException 异常](https://stackoverflow.com/questions/56149752/thread-sleep-inside-infinite-while-loop-in-lambda-doesnt-require-catch-interr)
+    ```java
+    ThreadPoolExecutor executor = ExecutorBuilder.create().setCorePoolSize(1).build();
+    //编译器类型推断为 Callable
+    executor.submit(() -> {
+      for (; ; ) {
+        TimeUnit.SECONDS.sleep(1);
+      }
+    });
+
+    //编译器类型推断为 Callable
+    executor.submit(() -> {
+      while (true) {
+        TimeUnit.SECONDS.sleep(1);
+      }
+    });
+
+    //编译器类型推断为 Runnable
+    executor.submit(() -> {
+      boolean valid=false;
+      while (valid) {
+        try {
+          TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    });
+    ```
+
+    * `Callable` 与 `Runnable` 的区别
+    
+      Callable : V call() throws Exception;
+
+      Runnable : public abstract void run();
