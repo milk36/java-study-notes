@@ -297,3 +297,55 @@ ThreadPoolExecutor 简单的并行操作 主要是为了执行时间不确定的
   并发是值任务提交 , 很多任务同时被提交过来
 
   并行指任务执行 , 多个任务在多个CPU上运行
+
+## 线程/线程池异常处理方式
+* 参考:
+  1. [Java捕获线程异常的几种方式](https://blog.csdn.net/pange1991/article/details/82115437)
+  1. [处理Java ExecutorService任务的异常 -- stackoverflow](https://stackoverflow.com/questions/2248131/handling-exceptions-from-java-executorservice-tasks)
+* `Future` 异常处理方式
+  ```java
+  static ThreadPoolExecutor singleExecutor = ExecutorBuilder.create()
+          //因为future.get()会阻塞等待计算结果, 所以不能使用单线程
+          .setCorePoolSize(2)
+          .build();
+
+  /**
+   * 线程池异常处理方式
+   */
+  static void testException2() {
+    Runnable runnable = getRunnable();
+    Future<?> future = singleExecutor.submit(runnable);
+    try {
+      //这里会阻塞等待计算结果
+      future.get();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      try {
+        TimeUnit.SECONDS.sleep(1);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      singleExecutor.execute(() -> testException2());
+    }
+  }
+  ```
+* `UncaughtExceptionHandler` 异常处理方式
+  ```java
+  private static void runTask(Runnable runnable) {
+    Thread thread = new Thread(runnable);
+    thread.setUncaughtExceptionHandler(taskExceptionHandler());
+    thread.start();
+  }
+
+  private static Thread.UncaughtExceptionHandler taskExceptionHandler() {
+    return (t, e) -> {
+      System.out.println(e.getMessage());
+      try {
+        TimeUnit.SECONDS.sleep(5);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+      runTask(getRunnable());
+    };
+  }
+  ```
