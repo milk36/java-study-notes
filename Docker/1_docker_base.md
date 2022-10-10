@@ -186,7 +186,7 @@ Docker 架构
 #### 容器命令
 
   有镜像才能创建容器
-* 启动容器
+* 通过镜像文件 -> 启动新容器
 
   `docker run [OPTIONS] IMAGE [COMMAND]`
 
@@ -206,6 +206,23 @@ Docker 架构
   ```shell
   //创建centos容器 并进入centos shell命令行
   docker run -it centos /bin/bash
+  ```
+* 守护方式启动容器
+
+  |OPTIONS|说明|
+  |--|--|
+  |-d|在后台运行容器并打印容器ID|
+  |-i|保持STDIN打开，即使没有连接|
+  |-t|分配一个pseudo-TTY|
+  |--rm|在容器退出时自动移除容器|
+  |--name|为容器指定一个名称|
+  ```shell
+  docker run -d 容器名称
+
+  docker run -dit openeuler/openeuler
+
+  //启动容器 并运行一个在后台循环输出的脚本
+  docker run -d openeuler/openeuler /bin/bash -c 'while true;do echo hello docker;sleep 2;done'
   ```
 * 列举运行容器信息
 
@@ -230,6 +247,7 @@ Docker 架构
   | -------- | -------------- |
   | `exit`     | 容器停止退出   |
   | ctrl+p+q | 容器不停止退出 |
+#### 已创建容器操作
 * 启动容器
   ```shell
   docker start 容器ID或者名称
@@ -255,23 +273,7 @@ Docker 架构
   //通过管道的方式删除 ps 查询到的容器
   docker ps -a -q | xargs docker rm
   ```
-* 守护方式启动容器
 
-  |OPTIONS|说明|
-  |--|--|
-  |-d|在后台运行容器并打印容器ID|
-  |-i|保持STDIN打开，即使没有连接|
-  |-t|分配一个pseudo-TTY|
-  |--rm|在容器退出时自动移除容器|
-  |--name|为容器指定一个名称|
-  ```shell
-  docker run -d 容器名称
-
-  docker run -dit openeuler/openeuler
-
-  //启动容器 并运行一个在后台循环输出的脚本
-  docker run -d openeuler/openeuler /bin/bash -c 'while true;do echo hello docker;sleep 2;done'
-  ```
   查看运行日志
   ```shell
   docker logs -t -f --tail 3(显示行数) 容器ID
