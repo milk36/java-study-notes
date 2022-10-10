@@ -1,0 +1,66 @@
+@startmindmap
+<style>
+mindmapDiagram {
+    node {
+        ' BackgroundColor lightGreen
+        BackgroundColor white
+    }
+    :depth(2) {
+      BackGroundColor red
+      FontColor white
+    }
+}
+</style>
+* 网络协议
+ * 互联网的本质就是网络协议
+  * 网络协议
+   * ip协议
+    * 就是ip协议提供的一种统一的地址格式
+    * 它为互联网上的每个网络和主机分配一个逻辑地址
+    * 所以ip地址也叫 -- 逻辑地址
+    * MAC地址则为物理地址
+    * 是32位二进制数据 分为4端 每段8位 0 ~ 255 来表示
+   * 网关(路由器) 
+    * Windows下默认就叫网关
+    * 网关其实就是一个网络通向其他网络ip地址
+     * 网关地址通常是掐头去尾的
+      * 192.168.0.1
+      * 192.168.0.254
+<style>
+node {
+    BackgroundColor White
+  }
+:depth(2) {
+    FontColor Black
+  }
+</style>
+* Tcp/Ip网络模型(1)
+** 第五层
+*** 应用层
+**** 应用层
+**** 表示层
+**** 会话层
+** 第四层
+*** 传输层
+** 第三层
+*** 网络层
+** 第二层
+*** 数据链路层
+** 第一层
+*** 物理层
+
+* Tcp/Ip网络模型(2)
+ * 第四层
+  * 应用层
+   * 应用层
+   * 表示层
+   * 会话层
+ * 第三层
+  * 传输层
+ * 第二层
+  * 网络层
+ * 第一层
+  * 网络接口层
+   * 数据链路层
+   * 物理层
+@endmindmap
