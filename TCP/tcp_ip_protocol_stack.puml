@@ -1,0 +1,37 @@
+@@startmindmap
+<style>
+mindmapDiagram {    
+    .red_node_style{
+        BackGroundColor red
+        FontColor white
+    }
+    .indigo_style{
+        BackGroundColor Indigo
+        FontColor white
+    }
+    .orange_style{
+      BackGroundColor Orange
+      FontColor white
+    }
+    .forestGreen_style{
+      BackGroundColor ForestGreen
+      FontColor white
+    }
+}
+</style>
+* **Tcp/Ip协议栈** <<red_node_style>>
+ * **IP协议** <<red_node_style>>
+  * **IP协议是TCP模型中最重要的协议** <<red_node_style>>
+  * **主要作用** <<orange_style>>
+   * 数据传输 <<orange_style>>
+   * 寻址 <<orange_style>>
+   * 路由选择 <<orange_style>>
+   * 数据报文分段 <<orange_style>>  
+  * IP报文格式 <<indigo_style>>
+   * 了解:源地址 目的地址 数据部分 <img:./img/ip_datagram.png{scale=0.5}> <<indigo_style>> 
+ * ICMP 网络控制报文协议 <<forestGreen_style>>
+  * ICMP 协议用于传递差错信息 时间 回显 网络信息等报文控制数据 <<indigo_style>>
+  * ICMP 报文
+   * ICMP 报文格式 <img:./img/icmp_datagram.png{scale=0.5}> <<indigo_style>>
+ * **TCP传输控制协议** <<red_node_style>>
+@@endmindmap

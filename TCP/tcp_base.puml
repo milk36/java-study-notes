@@ -5,15 +5,19 @@ mindmapDiagram {
         ' BackgroundColor lightGreen
         BackgroundColor white
     }
-    :depth(2) {
-      BackGroundColor red
-      FontColor white
+    ' :depth(2) {
+    '   BackGroundColor red
+    '   FontColor white
+    ' }
+    .red_node_style{
+       BackGroundColor red
+       FontColor white
     }
 }
 </style>
 * 网络协议
  * 互联网的本质就是网络协议
-  * 网络协议
+  *[#Red] 网络协议 <<red_node_style>>
    * ip协议
     * 就是ip协议提供的一种统一的地址格式
     * 它为互联网上的每个网络和主机分配一个逻辑地址
