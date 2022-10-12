@@ -1,0 +1,79 @@
+@@startmindmap
+<style>
+mindmapDiagram {    
+    .red_style{
+        BackGroundColor red
+        FontColor white
+    }
+    .indigo_style{
+        BackGroundColor Indigo
+        FontColor white
+    }
+    .orange_style{
+      BackGroundColor Orange
+      FontColor white
+    }
+    .forestGreen_style{
+      BackGroundColor ForestGreen
+      FontColor white
+    }
+    .darkSlateGray_style{
+      BackGroundColor DarkSlateGray
+      FontColor white
+    }
+    .lightSkyBlue_style{
+      BackGroundColor LightSkyBlue
+      FontColor white
+    }
+    .hotPink_style{
+      BackGroundColor HotPink
+      FontColor white
+    }
+}
+</style>
+* = TCP/IP 连接的建立 数据传输和连接断开 <<red_style>>
+ * = TCP/IP协议建立连接的过程 <<red_style>>
+  * = TCP报文格式 <<indigo_style>>
+   * <img:./img/tcp_datagram.png{scale=0.4}>
+  * = 面向连接的协议类型 <<indigo_style>>
+   * == 单播 <<red_style>>
+    * = 在数据发送和接收前, 通信双方必须在彼此间建立一条连接  <<indigo_style>>
+    * = 一对一的服务 <<indigo_style>>
+     * 有来信 <<indigo_style>>
+     * 有去言 <<indigo_style>>
+   * == 组播 <<orange_style>>
+   * == 广播 <<red_style>>
+    * = 广播一对多的服务, 交换机或其他应用 <<indigo_style>>
+  * = 采用三次握手建立一个连接 <<darkSlateGray_style>>
+   * = 三次握手的过程就是两台主机建立通讯连接的过程 <<indigo_style>>
+   * = 软件服务器架构 <<indigo_style>>
+    * = Client客户端 <<red_style>>
+     * = C <<indigo_style>>
+    * = Server服务端 <<darkSlateGray_style>>
+     * = S <<indigo_style>>
+   * = 三次握手内容: <<indigo_style>>
+    * = 第一次 客户端 向服务端发送请求 SYN码 seq \n= 告诉服务器主机和端口 (ISN码) <<red_style>>
+    * = 第二次 服务端 收到SYN码以后, 给客户端发送SYN + ACK码 \n= ACK表 示的时确认连接 <<red_style>>
+    * = 第三次 客户端收到ACK码以后再次向服务器发送 ACK码确认连接,\n= 服务 端收到ACK以后两台主机建立连接 <<red_style>>
+   * = 三次握手建立连接的过程状态转换: <<red_style>> 
+    * = Client 客户端状态 <<darkSlateGray_style>>
+     * = 第一次发送SYN码 <<darkSlateGray_style>>
+      * = SYN_SENT <<forestGreen_style>>
+       * 发送SYN <<darkSlateGray_style>>
+      * = ESTABLISHED 确定 <<lightSkyBlue_style>>
+       * = 接收到服务器ACK以后就绪状态 \n= 并发送ACK给服务器确认  <<darkSlateGray_style>>
+    * = Server 服务端状态 <<darkSlateGray_style>>
+     * = 接收到客户端SYN码 <<darkSlateGray_style>>
+      * = SYN_RCVD <<indigo_style>>
+       * = 接收SYN并发送SYN+ACK <<darkSlateGray_style>>
+      * = ESTABLISHED 确定 <<hotPink_style>>
+       * = 接收到ACK以后就绪状态 <<darkSlateGray_style>>
+ * = TCP/IP协议数据传输过程 <<red_style>>
+  * <img:./img/tpc_handshake_wave.png{scale=0.5}>
+ * = TCP/IP协议断开连接的过程 <<red_style>>
+  * = 采用四次挥手断开一个连接 <<indigo_style>>
+   * = 第一次客户端 发送 FIN <<red_style>>
+   * = 第二次服务端 发送 ACK <<red_style>>
+   * = 第三次服务端 发送 FIN <<red_style>>
+   * = 第四次客户端 发送 ACK <<red_style>>
+@@endmindmap

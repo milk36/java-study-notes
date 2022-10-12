@@ -19,19 +19,46 @@ mindmapDiagram {
     }
 }
 </style>
-* **Tcp/Ip协议栈** <<red_node_style>>
- * **IP协议** <<red_node_style>>
-  * **IP协议是TCP模型中最重要的协议** <<red_node_style>>
-  * **主要作用** <<orange_style>>
+* = Tcp/Ip协议栈 <<red_node_style>>
+ * = IP协议 <<red_node_style>>
+  * = IP协议是TCP模型中最重要的协议 <<red_node_style>>
+  * = 主要作用 <<orange_style>>
    * 数据传输 <<orange_style>>
    * 寻址 <<orange_style>>
    * 路由选择 <<orange_style>>
    * 数据报文分段 <<orange_style>>  
   * IP报文格式 <<indigo_style>>
    * 了解:源地址 目的地址 数据部分 <img:./img/ip_datagram.png{scale=0.5}> <<indigo_style>> 
- * ICMP 网络控制报文协议 <<forestGreen_style>>
+ * = ICMP 网络控制报文协议 <<forestGreen_style>>
   * ICMP 协议用于传递差错信息 时间 回显 网络信息等报文控制数据 <<indigo_style>>
-  * ICMP 报文
+  * ICMP 报文 <<indigo_style>>
    * ICMP 报文格式 <img:./img/icmp_datagram.png{scale=0.5}> <<indigo_style>>
- * **TCP传输控制协议** <<red_node_style>>
+ * = TCP传输控制协议 <<red_node_style>>
+  * 传输控制协议,简称TCP协议,在IP协议的基础上,\n增加了确认重发 滑动窗口和服用机制 <<indigo_style>>
+  * TCP协议提供了稳定的 安全的 面向连接的字节流服务 <<red_node_style>>
+  * = TCP协议特点 <<indigo_style>>
+   * 字节流服务 <<indigo_style>>
+    * 使用TCP协议 进行数据传输时应用程序之间传输数据时视为无结构的字节流 <<indigo_style>>
+   * 面向连接的服务 <<red_node_style>>
+    * 在数据传输之前TCP协议需要先建立连接 <<red_node_style>>
+    * 之后的TCP报文在此基础上进行传输 <<red_node_style>>
+   * = TCP传输的三个阶段 <<indigo_style>>
+    * = 建立连接 <<indigo_style>>
+    * = 数据传输 <<indigo_style>>
+    * = 断开连接 <<indigo_style>>
+  * = TCP协议控制位 <<indigo_style>>
+   * = TCP报文格式 <<indigo_style>>
+    * <img:./img/tcp_datagram.png{scale=0.4}>
+    * = URG <<indigo_style>>
+     * 紧急指针字段 <<indigo_style>>
+    * = ACK <<red_node_style>>
+     * 表示确认号有效 <<red_node_style>>
+    * = PSH <<indigo_style>>
+     * 表示接收方需要尽快的把数据交给应用层 <<indigo_style>>
+    * = SYN <<red_node_style>>
+     * 用于发起一个TCP连接 <<red_node_style>>
+    * = FIN <<red_node_style>>
+     * 用于断开一个TCP连接 <<red_node_style>>
+    * RST <<indigo_style>>
+     * 重新连接 <<indigo_style>>
 @@endmindmap
