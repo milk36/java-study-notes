@@ -1,0 +1,109 @@
+@@startmindmap
+<style>
+mindmapDiagram {    
+    .red_style{
+        BackGroundColor red
+        FontColor white
+    }
+    .indigo_style{
+        BackGroundColor Indigo
+        FontColor white
+    }
+    .orange_style{
+      BackGroundColor Orange
+      FontColor white
+    }
+    .forestGreen_style{
+      BackGroundColor ForestGreen
+      FontColor white
+    }
+    .darkSlateGray_style{
+      BackGroundColor DarkSlateGray
+      FontColor white
+    }
+    .lightSkyBlue_style{
+      BackGroundColor LightSkyBlue
+      FontColor white
+    }
+    .hotPink_style{
+      BackGroundColor HotPink
+      FontColor white
+    }
+    .dodgerBlue_style{
+      BackGroundColor DodgerBlue
+      FontColor white
+    }
+    .teal_style{
+      BackGroundColor Teal
+      FontColor white
+    }
+    .darkOrchid_style{
+      BackGroundColor DarkOrchid
+      FontColor white
+    }
+    .olive_style{
+      BackGroundColor Olive
+      FontColor white
+    }
+    .darkBlue_style{
+      BackGroundColor DarkBlue
+      FontColor white
+    }
+}
+</style>
+* = TCP/IP Wireshark抓包分析 <<indigo_style>>
+ * = TCP/IP协议数据传输过程 <<red_style>>
+  * <img:./img/tpc_handshake_wave.png{scale=0.5}>
+ * = Wireshark 内容说明 <<orange_style>>
+  * = TCP/IP模型 (四层/五层) <<orange_style>>
+   * <img:./img/tcp_wireshark_2.png{scale=1}>
+    * = 物理层 <back:cadetblue>Frame 337..</back> <<orange_style>>
+    * = 数据链路层 <back:cadetblue>Ethernet II ..</back> <<orange_style>>
+    * = IP层 <back:cadetblue>Internet Protocol ..</back> <<orange_style>>
+    * = 传输层 <back:cadetblue>Transimssion Control Protocol..</back> <<orange_style>>
+ * = 建立连接三次握手 <<red_style>>
+  * <img:./img/tcp_wireshark_1.png>
+  * = 客户端 <<forestGreen_style>>
+   * 源地址 <<forestGreen_style>>
+    * 192.168.11.17 <<forestGreen_style>>
+     * TCP <<forestGreen_style>>
+      * = ① SYN+Seq 第一步 <<red_style>> 
+       * = ISN码 客户端向服务器发送一个SYN报文,\n= 携带初始化序列号ISN(Initial Sequence Number),ISN是一个随机数X <<indigo_style>>
+       * = ISN码 <<teal_style>>
+        * = Seq = 0 <<forestGreen_style>>
+        * = 注意: 这里是Client.Seq <<olive_style>>
+      * = ③ ACK 第三步 <<indigo_style>>
+       * = ACK码 <<teal_style>>
+        * = ACK = Seq + 1 <<dodgerBlue_style>>
+        * = 注意: ACK里面返回的 是接收端从发送端获取的Seq+1 <<dodgerBlue_style>>
+       * = Seq码 <<darkOrchid_style>>
+        * = Seq = 1 <<darkOrchid_style>>
+        * = 注意: 这里是Client.Seq <<olive_style>>
+  * = 服务端 <<dodgerBlue_style>>
+   * 目标地址 <<dodgerBlue_style>>
+    * 192,168.11.190 <<dodgerBlue_style>>
+     * TCP <<dodgerBlue_style>>
+      * = ② SYN+ACK+Seq 第二步 <<red_style>>
+       * = ISN码 <<teal_style>>
+        * = Seq = 0 <<dodgerBlue_style>>
+        * = 注意: 这里是Server.Seq <<darkBlue_style>>
+       * = ACK码 <<forestGreen_style>>
+        * = ACK = Seq + 1 <<forestGreen_style>>
+        * = 注意: ACK里面返回的 是接收端从发送端获取的Seq+1 <<forestGreen_style>>
+ * = 断开连接四次挥手 <<dodgerBlue_style>>
+  * = 在ssh命令行 用 Alt + D 断开连接 <<indigo_style>>
+   * <img:./img/tcp_wireshark_3.png>
+  * = 断开连接四次挥手流程: <<indigo_style>>
+   * = 192.168.11.190 <<dodgerBlue_style>>
+    * = 发送FIN码+Seq <<dodgerBlue_style>>
+     * = Seq = 3338 <<dodgerBlue_style>>
+   * = 192.168.11.17 <<darkOrchid_style>>
+    * = 收到FIN码后回应ACK <<darkOrchid_style>>
+     * = ACK = Seq + 1 = 3339 <<darkOrchid_style>>
+   * = 192.168.11.17 <<darkOrchid_style>>
+    * = 发送FIN码+Seq <<darkOrchid_style>>
+     * = Seq = 2323 <<darkOrchid_style>>
+   * = 192.168.11.190 <<dodgerBlue_style>>
+    * = 收到FIN码后回应ACK <<dodgerBlue_style>>
+     * = ACK = Seq + 1 = 2324 <<dodgerBlue_style>>
+@@endmindmap

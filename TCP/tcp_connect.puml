@@ -52,6 +52,7 @@ mindmapDiagram {
     * = Server服务端 <<darkSlateGray_style>>
      * = S <<indigo_style>>
    * = 三次握手内容: <<indigo_style>>
+    * = seq码对应绑定在各自的主机端, 每次通信都会包含当前seq序号, \n= 例如Server.seq 和 Client.seq \n= 接收端收到发送端数据 通过ACK将 seq+1 返回<<forestGreen_style>>
     * = 第一次 客户端 向服务端发送请求 SYN码 seq \n= 告诉服务器主机和端口 (ISN码) <<red_style>>
     * = 第二次 服务端 收到SYN码以后, 给客户端发送SYN + ACK码 \n= ACK表 示的时确认连接 <<red_style>>
     * = 第三次 客户端收到ACK码以后再次向服务器发送 ACK码确认连接,\n= 服务 端收到ACK以后两台主机建立连接 <<red_style>>
