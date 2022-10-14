@@ -37,12 +37,17 @@ mindmapDiagram {
    * <img:./img/tcp_datagram.png{scale=0.4}>
   * = 面向连接的协议类型 <<indigo_style>>
    * == 单播 <<red_style>>
+    * = 应用场景:DNS域名解析 <<forestGreen_style>>
     * = 在数据发送和接收前, 通信双方必须在彼此间建立一条连接  <<indigo_style>>
     * = 一对一的服务 <<indigo_style>>
      * 有来信 <<indigo_style>>
      * 有去言 <<indigo_style>>
    * == 组播 <<orange_style>>
+    * = 应用场景:网络视频会议, 教学, 视频监控 <<forestGreen_style>>
+    * = 也称多地址广播或者组播 <<indigo_style>>
    * == 广播 <<red_style>>
+    * = 应用场景:ARP数据报广播 <<forestGreen_style>>
+     * = ARP 地址解析协议 \n= 主机发送信息时将包含目标IP地址的ARP请求广播到局域网络上的\n= 所有主机，并接收返回消息，以此确定目标的物理地址\n\n= ARP缓存 即IP地址-->MAC地址的对应表缓存 <<forestGreen_style>>
     * = 广播一对多的服务, 交换机或其他应用 <<indigo_style>>
   * = 采用三次握手建立一个连接 <<darkSlateGray_style>>
    * = 三次握手的过程就是两台主机建立通讯连接的过程 <<indigo_style>>
