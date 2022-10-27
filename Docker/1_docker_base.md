@@ -199,7 +199,7 @@ Docker 架构
   | `-i`    | `以交互模式运行容器，通常与 -t 同时使用`                     |
   | `-t`    | `为容器重新分配一个伪输入终端，通常与 -i 同时使用`           |
   | -P:     | 随机端口映射                                                 |
-  | -p      | 指定端口映射，有以下四种格式 ip:hostPort:containerPort<br>ip::containerPort<br>`hostPort:containerPort`<br>containerPort<br> |
+  | -p      | 指定端口映射，有以下四种格式 <br>`ip:hostPort:containerPort`<br>`ip::containerPort`<br>`hostPort:containerPort`<br>`containerPort`<br> |
 
   交互式的容器
 
