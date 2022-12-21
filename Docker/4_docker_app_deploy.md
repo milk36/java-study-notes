@@ -51,7 +51,14 @@ Docker 应用部署
   docker run -id -p 27017:27017 --name d_mongo -v /data/docker/mongo/db_4.2:/data/db mongo:4.2 --auth
   ```  
 * 配置mongodb 超级用户
+  
+  进入命令行工具配置 :
+
   `docker exec -it c_mongo mongo`  
+  
+  4.x以上版本使用 :
+  
+  `docker exec -it c_mongo mongosh`
 
   ```shell
   use admin
