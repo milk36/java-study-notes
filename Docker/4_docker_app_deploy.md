@@ -158,6 +158,8 @@ Docker 应用部署
   ```  
 * 修改redis密码
   ```shell
+  docker exec -it c_redis redis-cli #进入redis命令行控制台
+
   redis-cli
 
   #查看现有密码
