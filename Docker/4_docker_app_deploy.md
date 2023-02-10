@@ -155,6 +155,8 @@ Docker 应用部署
 * 创建容器 设置启动参数
   ```shell
   docker run -id --name=c_redis -p 6379:6379 redis:5.0
+
+  docker run -id --name=c_redis -p 6379:6379 redis:5.0 --requirepass "123456" #在启动容器的时候，就为其配置密码
   ```  
 * 修改redis密码
   ```shell
