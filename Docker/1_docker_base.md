@@ -1,19 +1,26 @@
-Docker基础篇
-===
+# Docker基础篇
+
 Docker 架构
 
 ![Docker 架构](https://docs.docker.com/engine/images/architecture.svg "Docker 架构")
-#### 相关资源
+
+## 相关资源
 
 [官网](http://www.docker.com)
 
 [仓库](https://hub.docker.com)
 
+[Docker 入门到实践 -- 中文](https://yeasy.gitbook.io/docker_practice/install/mirror)
+
+* [Ubuntu 安装 Docker](https://yeasy.gitbook.io/docker_practice/install/ubuntu)
+
+   [解决 ERROR:Docker Got permission denied while trying to connect to the Docker daemon socket at unix](https://blog.csdn.net/xiangxianghehe/article/details/80897769)
+
 [docker 使用安装教程 参考](https://github.com/judasn/Linux-Tutorial/blob/955ff70778/markdown-file/Docker-Install-And-Usage.md)
 
-* CentOS 安装过程：
+### CentOS 安装
 
-  * 卸载原有的环境：
+* 卸载原有的环境：
 
     ```shell
     sudo yum remove docker \
@@ -25,7 +32,8 @@ Docker 架构
                       docker-logrotate \
                       docker-engine
     ```
-  * 安装指令
+
+* 安装指令
     安装对应的依赖环境和镜像地址
 
     ```shell
@@ -35,6 +43,7 @@ Docker 架构
         --add-repo \
         https://download.docker.com/linux/centos/docker-ce.repo
     ```
+
     安装过慢设置阿里云镜像
 
     ```shell
@@ -50,7 +59,8 @@ Docker 架构
     ```shenll
     sudo yum install -y docker-ce docker-ce-cli containerd.io
     ```
-  * Docker卸载
+
+* Docker卸载
 
     ```shell
     systemctl stop docker
@@ -59,6 +69,9 @@ Docker 架构
     # 重启服务
     sudo systemctl restart docker
     ```
+
+### 服务启动与状态
+
 * 查看配置文件位置：systemctl show --property=FragmentPath docker
 
 * 启动 Docker：`systemctl start docker.service` 或 `systemctl start docker`
@@ -70,7 +83,9 @@ Docker 架构
 * 开机启动docker `systemctl enable docker`
 
 * 运行 hello world 镜像：`docker run hello-world`
-#### Docker基本结构
+
+### Docker基本结构
+
 * 镜像(image)
 
   Docker 镜像（Image）就是一个只读的模板。镜像可以用来创建 Docker 容器，一个镜像可以创建很多容器。

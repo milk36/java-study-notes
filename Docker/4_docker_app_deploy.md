@@ -47,8 +47,8 @@ Docker 应用部署
   mongo:3.4 --auth
 
   #实际运行指令
-  docker run -id -p 27017:27017 --name c_mongo -v /data/docker/mongo/db:/data/db mongo:3.4 --auth
-  docker run -id -p 27017:27017 --name d_mongo -v /data/docker/mongo/db_4.2:/data/db mongo:4.2 --auth
+  docker run -id -p 28018:27017 --name c_mongo -v /data/docker/mongo/db:/data/db mongo:3.4 --auth
+  docker run -id -p 28018:27017 --name d_mongo -v /data/docker/mongo/db_4.2:/data/db mongo:4.2 --auth
   ```  
 * 配置mongodb 超级用户
   
